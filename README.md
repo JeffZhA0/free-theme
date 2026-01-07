@@ -115,7 +115,7 @@ Click the "Random Color Scheme" button to quickly generate a random color scheme
 
 ### Configuration Sync
 
-Configurations are automatically saved to `/conf/codetheme-config.json`. You can:
+Configurations are automatically saved to `/conf/free-theme-config.json`. You can:
 - Manually edit the configuration file
 - Sync configuration files between devices
 - Backup and restore configurations
@@ -126,10 +126,10 @@ The theme provides a JavaScript API that can be used in the browser console:
 
 ```javascript
 // Get current configuration
-const config = await window.CodeThemeConfig.getConfig();
+const config = await window.FreeThemeConfig.getConfig();
 
 // Update configuration
-await window.CodeThemeConfig.updateConfig({
+await window.FreeThemeConfig.updateConfig({
     light: {
         primary: '#007bff',
         background: '#ffffff',
@@ -137,15 +137,15 @@ await window.CodeThemeConfig.updateConfig({
 });
 
 // Reset to default configuration
-await window.CodeThemeConfig.resetConfig();
+await window.FreeThemeConfig.resetConfig();
 
 // Generate random color scheme
-await window.CodeThemeConfig.generateRandomColors('light');
+await window.FreeThemeConfig.generateRandomColors('light');
 ```
 
 ## 📁 Configuration File
 
-Configuration file location: `/conf/codetheme-config.json`
+Configuration file location: `/conf/free-theme-config.json`
 
 Configuration file structure:
 
@@ -180,7 +180,7 @@ Configuration file structure:
 ### File Structure
 
 ```
-codetheme/
+free-theme/
 ├── theme.json          # Theme configuration file
 ├── theme.css          # Theme stylesheet
 ├── theme.js           # Theme script file

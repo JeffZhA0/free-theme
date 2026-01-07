@@ -373,7 +373,7 @@ img:hover {
 }
 
 /* 配置按钮样式 */
-#CodeThemeConfigButton {
+#FreeThemeConfigButton {
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -388,19 +388,19 @@ img:hover {
     opacity: 1 !important;
 }
 
-#CodeThemeConfigButton:hover {
+#FreeThemeConfigButton:hover {
     color: var(--b3-theme-primary);
     background-color: var(--b3-theme-surface-hover);
 }
 
-#CodeThemeConfigButton svg {
+#FreeThemeConfigButton svg {
     width: 16px;
     height: 16px;
     display: block;
 }
 
 /* 配置窗口样式 */
-#CodeThemeConfigWindow {
+#FreeThemeConfigWindow {
     background-color: var(--b3-theme-background);
     border: 1px solid var(--b3-border-color);
     border-radius: var(--b3-theme-border-radius-medium);
@@ -410,7 +410,7 @@ img:hover {
 }
 
 /* 固定头部区域 */
-#CodeThemeConfigWindow > div:first-child {
+#FreeThemeConfigWindow > div:first-child {
     position: sticky;
     top: 0;
     z-index: 10;
@@ -422,7 +422,7 @@ img:hover {
 }
 
 /* 可滚动内容区域 */
-#CodeThemeConfigContent {
+#FreeThemeConfigContent {
     color: var(--b3-theme-text-primary);
     max-height: calc(80vh - 140px);
     overflow-y: auto;
@@ -433,20 +433,20 @@ img:hover {
 }
 
 /* 配置窗口滚动条样式 */
-#CodeThemeConfigContent::-webkit-scrollbar {
+#FreeThemeConfigContent::-webkit-scrollbar {
     width: 6px;
 }
 
-#CodeThemeConfigContent::-webkit-scrollbar-thumb {
+#FreeThemeConfigContent::-webkit-scrollbar-thumb {
     background: var(--b3-border-color);
     border-radius: 3px;
 }
 
-#CodeThemeConfigContent::-webkit-scrollbar-thumb:hover {
+#FreeThemeConfigContent::-webkit-scrollbar-thumb:hover {
     background: var(--b3-border-color-hover);
 }
 
-#CodeThemeConfigContent button {
+#FreeThemeConfigContent button {
     background-color: var(--b3-theme-surface);
     color: var(--b3-theme-text-primary);
     border: 1px solid var(--b3-border-color);
@@ -457,29 +457,29 @@ img:hover {
     transition: var(--b3-transition-fast);
 }
 
-#CodeThemeConfigContent button:hover {
+#FreeThemeConfigContent button:hover {
     background-color: var(--b3-theme-surface-hover);
     border-color: var(--b3-border-color-hover);
 }
 
-#CodeThemeConfigContent input[type="text"] {
+#FreeThemeConfigContent input[type="text"] {
     background-color: var(--b3-theme-background);
     color: var(--b3-theme-text-primary);
     border: 1px solid var(--b3-border-color);
 }
 
-#CodeThemeConfigContent input[type="text"]:focus {
+#FreeThemeConfigContent input[type="text"]:focus {
     border-color: var(--b3-theme-primary);
     box-shadow: 0 0 0 2px var(--b3-theme-primary-light);
 }
 
 /* 刷新按钮样式 */
-#CodeThemeConfigContent button:disabled {
+#FreeThemeConfigContent button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-#CodeThemeConfigContent button svg {
+#FreeThemeConfigContent button svg {
     flex-shrink: 0;
 }
 
@@ -493,6 +493,6 @@ img:hover {
     }
 }
 
-#CodeThemeConfigContent button:active svg {
+#FreeThemeConfigContent button:active svg {
     animation: spin 0.5s linear;
 }

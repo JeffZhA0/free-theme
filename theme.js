@@ -1,8 +1,8 @@
-// CodeTheme 配置系统
+// FreeTheme 配置系统
 (function() {
     'use strict';
     
-    const CONFIG_PATH = '/conf/codetheme-config.json';
+    const CONFIG_PATH = '/conf/free-theme-config.json';
     let configCache = null;
     let cacheTimestamp = 0;
     const CACHE_DURATION = 5000;
@@ -556,7 +556,7 @@
     }
     
     // 导出全局 API
-    window.CodeThemeConfig = {
+    window.FreeThemeConfig = {
         getConfig,
         updateConfig: async (updates) => {
             const newConfig = await updateConfig(updates);
@@ -583,7 +583,7 @@
     
     function createConfigButton() {
         // 检查是否已存在按钮
-        if (document.getElementById('CodeThemeConfigButton')) {
+        if (document.getElementById('FreeThemeConfigButton')) {
             return;
         }
         
@@ -596,7 +596,7 @@
                 // 如果找不到工具栏，延迟重试
                 setTimeout(createConfigButton, 300);
             } else {
-                console.warn('CodeTheme: 无法找到工具栏，配置按钮未创建');
+                console.warn('FreeTheme: 无法找到工具栏，配置按钮未创建');
             }
             return;
         }
@@ -605,9 +605,9 @@
         retryCount = 0;
         
         const button = document.createElement('div');
-        button.id = 'CodeThemeConfigButton';
+        button.id = 'FreeThemeConfigButton';
         button.className = 'toolbar__item ariaLabel';
-        button.setAttribute('aria-label', 'CodeTheme 配置');
+        button.setAttribute('aria-label', 'FreeTheme 配置');
         button.style.cursor = 'pointer';
         button.style.display = 'flex';
         button.style.alignItems = 'center';
@@ -632,7 +632,7 @@
                 targetElement.appendChild(button);
             }
         } catch (error) {
-            console.error('CodeTheme: 创建配置按钮失败:', error);
+            console.error('FreeTheme: 创建配置按钮失败:', error);
         }
     }
     
@@ -643,7 +643,7 @@
         }
         
         toolbarObserver = new MutationObserver(() => {
-            const button = document.getElementById('CodeThemeConfigButton');
+            const button = document.getElementById('FreeThemeConfigButton');
             const toolbar = document.querySelector('#toolbarVIP');
             // 如果工具栏存在但按钮不存在，创建按钮
             if (toolbar && (!button || !document.body.contains(button))) {
@@ -666,13 +666,13 @@
     
     // 创建配置窗口
     async function createConfigWindow() {
-        const existingWindow = document.getElementById('CodeThemeConfigWindow');
+        const existingWindow = document.getElementById('FreeThemeConfigWindow');
         if (existingWindow) {
             return existingWindow;
         }
         
         const window = document.createElement('div');
-        window.id = 'CodeThemeConfigWindow';
+        window.id = 'FreeThemeConfigWindow';
         window.className = 'b3-menu';
         window.style.position = 'fixed';
         window.style.zIndex = '12';
@@ -682,7 +682,7 @@
         window.style.display = 'flex';
         window.style.flexDirection = 'column';
         
-        const button = document.getElementById('CodeThemeConfigButton');
+        const button = document.getElementById('FreeThemeConfigButton');
         if (button) {
             const buttonRect = button.getBoundingClientRect();
             window.style.left = `${buttonRect.right}px`;
@@ -729,7 +729,7 @@
         
         // 创建外层容器
         const wrapper = document.createElement('div');
-        wrapper.id = 'CodeThemeConfigWrapper';
+        wrapper.id = 'FreeThemeConfigWrapper';
         wrapper.style.display = 'flex';
         wrapper.style.flexDirection = 'column';
         wrapper.style.height = '100%';
@@ -746,7 +746,7 @@
         
         // 标题（显示当前主题模式）
         const title = document.createElement('div');
-        title.textContent = `CodeTheme 配置 (${modeName})`;
+        title.textContent = `FreeTheme 配置 (${modeName})`;
         title.style.fontSize = '16px';
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '12px';
@@ -833,7 +833,7 @@
         
         // 创建可滚动内容区域
         const content = document.createElement('div');
-        content.id = 'CodeThemeConfigContent';
+        content.id = 'FreeThemeConfigContent';
         content.style.padding = '12px';
         content.style.overflowY = 'auto';
         content.style.flex = '1';
@@ -1160,7 +1160,7 @@
     
     // 切换配置窗口
     async function toggleConfigWindow() {
-        const window = document.getElementById('CodeThemeConfigWindow');
+        const window = document.getElementById('FreeThemeConfigWindow');
         if (window) {
             removeConfigWindow();
         } else {
@@ -1170,7 +1170,7 @@
     
     // 移除配置窗口
     function removeConfigWindow() {
-        const window = document.getElementById('CodeThemeConfigWindow');
+        const window = document.getElementById('FreeThemeConfigWindow');
         if (window) {
             if (window._clickHandler) {
                 document.removeEventListener('click', window._clickHandler);
@@ -1184,10 +1184,10 @@
     
     // 刷新配置显示
     async function refreshConfig() {
-        const configWindow = document.getElementById('CodeThemeConfigWindow');
+        const configWindow = document.getElementById('FreeThemeConfigWindow');
         if (configWindow) {
             // 找到 wrapper（最外层容器）
-            const oldWrapper = document.getElementById('CodeThemeConfigWrapper');
+            const oldWrapper = document.getElementById('FreeThemeConfigWrapper');
             if (oldWrapper) {
                 const newWrapper = await createConfigContent();
                 oldWrapper.replaceWith(newWrapper);
@@ -1235,7 +1235,7 @@
     window.destroyTheme = () => {
         clearCache();
         removeConfigWindow();
-        const button = document.getElementById('CodeThemeConfigButton');
+        const button = document.getElementById('FreeThemeConfigButton');
         if (button) {
             button.remove();
         }

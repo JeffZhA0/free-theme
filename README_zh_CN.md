@@ -115,7 +115,7 @@
 
 ### 配置同步
 
-配置会自动保存到 `/conf/codetheme-config.json` 文件中，你可以：
+配置会自动保存到 `/conf/free-theme-config.json` 文件中，你可以：
 - 手动编辑配置文件
 - 在不同设备间同步配置文件
 - 备份和恢复配置
@@ -126,10 +126,10 @@
 
 ```javascript
 // 获取当前配置
-const config = await window.CodeThemeConfig.getConfig();
+const config = await window.FreeThemeConfig.getConfig();
 
 // 更新配置
-await window.CodeThemeConfig.updateConfig({
+await window.FreeThemeConfig.updateConfig({
     light: {
         primary: '#007bff',
         background: '#ffffff',
@@ -137,15 +137,15 @@ await window.CodeThemeConfig.updateConfig({
 });
 
 // 重置为默认配置
-await window.CodeThemeConfig.resetConfig();
+await window.FreeThemeConfig.resetConfig();
 
 // 生成随机配色
-await window.CodeThemeConfig.generateRandomColors('light');
+await window.FreeThemeConfig.generateRandomColors('light');
 ```
 
 ## 📁 配置文件
 
-配置文件位置：`/conf/codetheme-config.json`
+配置文件位置：`/conf/free-theme-config.json`
 
 配置文件结构：
 
@@ -180,7 +180,7 @@ await window.CodeThemeConfig.generateRandomColors('light');
 ### 文件结构
 
 ```
-codetheme/
+free-theme/
 ├── theme.json          # 主题配置文件
 ├── theme.css          # 主题样式文件
 ├── theme.js           # 主题脚本文件
