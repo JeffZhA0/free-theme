@@ -1,33 +1,26 @@
 {
-  "name": "theme-sample",
-  "author": "Vanessa",
-  "url": "https://github.com/siyuan-note/theme-sample",
-  "version": "0.0.3",
-  "minAppVersion": "2.8.8",
+  "name": "free-theme",
+  "author": "JeffZhA0",
+  "url": "https://github.com/JeffZhA0/free-theme",
+  "version": "1.0.0",
+  "minAppVersion": "3.5.2",
   "displayName": {
-    "default": "Theme Sample",
-    "zh_CN": "主题示例"
+    "default": "free Theme",
+    "zh_CN": "自由主题"
   },
   "description": {
-    "default": "This is a theme sample",
-    "zh_CN": "这是一个主题示例"
+    "default": "This is a free theme",
+    "zh_CN": "这是一个自由主题"
   },
   "readme": {
     "default": "README.md",
     "zh_CN": "README_zh_CN.md"
   },
-  "funding": {
-    "openCollective": "",
-    "patreon": "",
-    "github": "",
-    "custom": [
-      "https://ld246.com/sponsor"
-    ]
-  },
   "modes": [
-    "light"
+    "light",
+    "dark"
   ],
   "keywords": [
-    "sample", "示例"
+    "free", "自由"
   ]
 }

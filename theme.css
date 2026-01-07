@@ -1,3 +1,498 @@
-:root {
+/* 明亮主题 */
+:root,
+[data-theme-mode="light"] {
+    /* 主色调 */
     --b3-theme-primary: #d23f31;
+    --b3-theme-primary-light: #f5e6e4;
+    --b3-theme-primary-dark: #b83226;
+    --b3-theme-primary-hover: #c6392b;
+    
+    /* 背景色 */
+    --b3-theme-background: #ffffff;
+    --b3-theme-background-light: #f8f9fa;
+    --b3-theme-background-dark: #f0f1f2;
+    --b3-theme-surface: #ffffff;
+    --b3-theme-surface-hover: #f8f9fa;
+    
+    /* 文本色 */
+    --b3-theme-on-background: #212529;
+    --b3-theme-on-surface: #343a40;
+    --b3-theme-on-primary: #ffffff;
+    --b3-theme-text-primary: #212529;
+    --b3-theme-text-secondary: #6c757d;
+    --b3-theme-text-disabled: #adb5bd;
+    
+    /* 边框和分割线 */
+    --b3-border-color: #dee2e6;
+    --b3-border-color-hover: #adb5bd;
+    --b3-border-color-light: #e9ecef;
+    
+    /* 代码块背景 */
+    --b3-theme-code-background: #f8f9fa;
+    --b3-theme-code-border: #e9ecef;
+    --b3-theme-code-text: #212529;
+    
+    /* 阴影 */
+    --b3-theme-shadow: rgba(0, 0, 0, 0.1);
+    --b3-theme-shadow-light: rgba(0, 0, 0, 0.05);
+    --b3-theme-shadow-medium: rgba(0, 0, 0, 0.08);
+    
+    /* 选中文本颜色 */
+    --b3-theme-selection-bg: #b3d4fc;
+    --b3-theme-selection-text: #212529;
+    
+    /* 过渡动画 */
+    --b3-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --b3-transition-fast: all 0.15s ease;
+}
+
+/* 暗黑主题 */
+[data-theme-mode="dark"] {
+    /* 主色调 */
+    --b3-theme-primary: #ff6b6b;
+    --b3-theme-primary-light: #4a2c2c;
+    --b3-theme-primary-dark: #ff5252;
+    --b3-theme-primary-hover: #ff7a7a;
+    
+    /* 背景色 */
+    --b3-theme-background: #1e1e1e;
+    --b3-theme-background-light: #252526;
+    --b3-theme-background-dark: #2d2d30;
+    --b3-theme-surface: #252526;
+    --b3-theme-surface-hover: #2d2d30;
+    
+    /* 文本色 */
+    --b3-theme-on-background: #d4d4d4;
+    --b3-theme-on-surface: #cccccc;
+    --b3-theme-on-primary: #ffffff;
+    --b3-theme-text-primary: #d4d4d4;
+    --b3-theme-text-secondary: #858585;
+    --b3-theme-text-disabled: #505050;
+    
+    /* 边框和分割线 */
+    --b3-border-color: #3e3e42;
+    --b3-border-color-hover: #505050;
+    --b3-border-color-light: #2d2d30;
+    
+    /* 代码块背景 */
+    --b3-theme-code-background: #252526;
+    --b3-theme-code-border: #3e3e42;
+    --b3-theme-code-text: #d4d4d4;
+    
+    /* 阴影 */
+    --b3-theme-shadow: rgba(0, 0, 0, 0.3);
+    --b3-theme-shadow-light: rgba(0, 0, 0, 0.2);
+    --b3-theme-shadow-medium: rgba(0, 0, 0, 0.25);
+    
+    /* 选中文本颜色 */
+    --b3-theme-selection-bg: #264f78;
+    --b3-theme-selection-text: #d4d4d4;
+    
+    /* 过渡动画 */
+    --b3-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --b3-transition-fast: all 0.15s ease;
+}
+
+/* 通用样式优化 */
+body {
+    background-color: var(--b3-theme-background);
+    color: var(--b3-theme-on-background);
+    transition: var(--b3-transition);
+    /* 英文使用等宽字体，中文使用思源黑体 */
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题样式优化 */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--b3-theme-text-primary);
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+/* 段落样式 */
+p {
+    line-height: 1.8;
+    margin-bottom: 1em;
+    color: var(--b3-theme-text-primary);
+}
+
+/* 列表样式 */
+ul, ol {
+    line-height: 1.8;
+    padding-left: 1.5em;
+}
+
+li {
+    margin-bottom: 0.5em;
+    color: var(--b3-theme-text-primary);
+}
+
+/* 行内代码样式 */
+.protyle-wysiwyg code:not(pre code),
+.b3-typography code:not(pre code) {
+    background-color: var(--b3-theme-code-background);
+    border: 1px solid var(--b3-theme-code-border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.9em;
+    color: var(--b3-theme-code-text);
+    /* 代码块使用等宽字体 */
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', monospace, sans-serif;
+    transition: var(--b3-transition-fast);
+}
+
+.protyle-wysiwyg code:not(pre code):hover,
+.b3-typography code:not(pre code):hover {
+    background-color: var(--b3-theme-surface-hover);
+    border-color: var(--b3-border-color-hover);
+}
+
+/* 代码块容器 */
+.protyle-wysiwyg [data-node-id].code-block,
+.b3-typography [data-node-id].code-block {
+    background-color: var(--b3-theme-code-background);
+    border: 1px solid var(--b3-theme-code-border);
+    border-radius: 8px;
+    margin: 1em 0;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
+    transition: var(--b3-transition);
+}
+
+.protyle-wysiwyg [data-node-id].code-block:hover,
+.b3-typography [data-node-id].code-block:hover {
+    box-shadow: 0 4px 12px var(--b3-theme-shadow-medium);
+    border-color: var(--b3-border-color-hover);
+}
+
+/* 代码块 pre 和 code 标签字体 */
+.protyle-wysiwyg [data-node-id].code-block pre,
+.protyle-wysiwyg [data-node-id].code-block pre code,
+.b3-typography [data-node-id].code-block pre,
+.b3-typography [data-node-id].code-block pre code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', monospace, sans-serif;
+    color: var(--b3-theme-code-text);
+    background: transparent;
+    border: none;
+    padding: 1em;
+    margin: 0;
+    overflow-x: auto;
+    line-height: 1.6;
+    font-size: 0.9em;
+}
+
+.protyle-wysiwyg [data-node-id].code-block pre {
+    background-color: var(--b3-theme-code-background);
+}
+
+/* 链接样式 */
+a {
+    color: var(--b3-theme-primary);
+    text-decoration: none;
+    transition: var(--b3-transition-fast);
+    border-bottom: 1px solid transparent;
+}
+
+a:hover {
+    color: var(--b3-theme-primary-hover);
+    border-bottom-color: var(--b3-theme-primary-hover);
+}
+
+a:active {
+    color: var(--b3-theme-primary-dark);
+}
+
+/* 按钮样式 */
+button.b3-button--primary {
+    background-color: var(--b3-theme-primary);
+    color: var(--b3-theme-on-primary);
+    border-color: var(--b3-theme-primary);
+    border-radius: 6px;
+    padding: 0.5em 1em;
+    font-weight: 500;
+    transition: var(--b3-transition);
+    cursor: pointer;
+    box-shadow: 0 2px 4px var(--b3-theme-shadow-light);
+}
+
+button.b3-button--primary:hover {
+    background-color: var(--b3-theme-primary-hover);
+    border-color: var(--b3-theme-primary-hover);
+    box-shadow: 0 4px 8px var(--b3-theme-shadow-medium);
+    transform: translateY(-1px);
+}
+
+button.b3-button--primary:active {
+    background-color: var(--b3-theme-primary-dark);
+    border-color: var(--b3-theme-primary-dark);
+    transform: translateY(0);
+    box-shadow: 0 1px 2px var(--b3-theme-shadow-light);
+}
+
+/* 输入框样式 */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea {
+    background-color: var(--b3-theme-background);
+    color: var(--b3-theme-on-background);
+    border: 1px solid var(--b3-border-color);
+    border-radius: 6px;
+    padding: 0.5em 0.75em;
+    transition: var(--b3-transition);
+    font-family: inherit;
+}
+
+input[type="text"]:hover,
+input[type="search"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+textarea:hover {
+    border-color: var(--b3-border-color-hover);
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--b3-theme-primary);
+    box-shadow: 0 0 0 3px var(--b3-theme-primary-light);
+}
+
+/* 卡片和面板样式 */
+.b3-card,
+.b3-panel {
+    background-color: var(--b3-theme-surface);
+    border: 1px solid var(--b3-border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
+    transition: var(--b3-transition);
+    padding: 1em;
+}
+
+.b3-card:hover,
+.b3-panel:hover {
+    box-shadow: 0 4px 12px var(--b3-theme-shadow-medium);
+    border-color: var(--b3-border-color-hover);
+    transform: translateY(-2px);
+}
+
+/* 引用块样式 */
+blockquote {
+    border-left: 4px solid var(--b3-theme-primary);
+    padding-left: 1em;
+    margin: 1em 0;
+    color: var(--b3-theme-text-secondary);
+    font-style: italic;
+    background-color: var(--b3-theme-background-light);
+    padding: 1em;
+    border-radius: 4px;
+}
+
+/* 表格样式 */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+table th,
+table td {
+    border: 1px solid var(--b3-border-color);
+    padding: 0.75em;
+    text-align: left;
+}
+
+table th {
+    background-color: var(--b3-theme-background-light);
+    font-weight: 600;
+    color: var(--b3-theme-text-primary);
+}
+
+table tr:hover {
+    background-color: var(--b3-theme-surface-hover);
+}
+
+/* 分割线样式 */
+hr {
+    border: none;
+    border-top: 1px solid var(--b3-border-color);
+    margin: 2em 0;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--b3-theme-background-dark);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--b3-border-color);
+    border-radius: 5px;
+    transition: var(--b3-transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--b3-border-color-hover);
+}
+
+/* 选中文本样式 */
+::selection {
+    background-color: var(--b3-theme-selection-bg);
+    color: var(--b3-theme-selection-text);
+}
+
+::-moz-selection {
+    background-color: var(--b3-theme-selection-bg);
+    color: var(--b3-theme-selection-text);
+}
+
+/* 图片样式优化 */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
+    transition: var(--b3-transition);
+}
+
+img:hover {
+    box-shadow: 0 4px 12px var(--b3-theme-shadow-medium);
+}
+
+/* 配置按钮样式 */
+#CodeThemeConfigButton {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--b3-theme-on-background);
+    transition: var(--b3-transition-fast);
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#CodeThemeConfigButton:hover {
+    color: var(--b3-theme-primary);
+    background-color: var(--b3-theme-surface-hover);
+}
+
+#CodeThemeConfigButton svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+/* 配置窗口样式 */
+#CodeThemeConfigWindow {
+    background-color: var(--b3-theme-background);
+    border: 1px solid var(--b3-border-color);
+    border-radius: var(--b3-theme-border-radius-medium);
+    box-shadow: 0 4px 16px var(--b3-theme-shadow);
+    max-width: 400px;
+    overflow: hidden;
+}
+
+/* 固定头部区域 */
+#CodeThemeConfigWindow > div:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--b3-theme-background);
+    border-bottom: 1px solid var(--b3-border-color);
+    padding: 12px;
+    margin: 0;
+    box-shadow: 0 2px 4px var(--b3-theme-shadow-light);
+}
+
+/* 可滚动内容区域 */
+#CodeThemeConfigContent {
+    color: var(--b3-theme-text-primary);
+    max-height: calc(80vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    padding-right: 4px;
+    flex: 1;
+}
+
+/* 配置窗口滚动条样式 */
+#CodeThemeConfigContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+#CodeThemeConfigContent::-webkit-scrollbar-thumb {
+    background: var(--b3-border-color);
+    border-radius: 3px;
+}
+
+#CodeThemeConfigContent::-webkit-scrollbar-thumb:hover {
+    background: var(--b3-border-color-hover);
+}
+
+#CodeThemeConfigContent button {
+    background-color: var(--b3-theme-surface);
+    color: var(--b3-theme-text-primary);
+    border: 1px solid var(--b3-border-color);
+    border-radius: var(--b3-theme-border-radius-small);
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--b3-transition-fast);
+}
+
+#CodeThemeConfigContent button:hover {
+    background-color: var(--b3-theme-surface-hover);
+    border-color: var(--b3-border-color-hover);
+}
+
+#CodeThemeConfigContent input[type="text"] {
+    background-color: var(--b3-theme-background);
+    color: var(--b3-theme-text-primary);
+    border: 1px solid var(--b3-border-color);
+}
+
+#CodeThemeConfigContent input[type="text"]:focus {
+    border-color: var(--b3-theme-primary);
+    box-shadow: 0 0 0 2px var(--b3-theme-primary-light);
+}
+
+/* 刷新按钮样式 */
+#CodeThemeConfigContent button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#CodeThemeConfigContent button svg {
+    flex-shrink: 0;
+}
+
+/* 刷新按钮动画 */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#CodeThemeConfigContent button:active svg {
+    animation: spin 0.5s linear;
 }
