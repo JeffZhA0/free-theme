@@ -587,6 +587,12 @@
             return;
         }
         
+        // 检查 id 为 toolbar 的 div 标签的 class 中是否包含 "toolbar--browser"
+        const toolbar = document.getElementById('toolbar');
+        if (toolbar && toolbar.classList.contains('toolbar--browser')) {
+            return;
+        }
+        
         // 查找工具栏位置（参考 QYL 主题的方式）
         const targetElement = document.querySelector('#toolbarVIP');
         
@@ -643,6 +649,12 @@
         }
         
         toolbarObserver = new MutationObserver(() => {
+            // 检查 id 为 toolbar 的 div 标签的 class 中是否包含 "toolbar--browser"
+            const toolbarDiv = document.getElementById('toolbar');
+            if (toolbarDiv && toolbarDiv.classList.contains('toolbar--browser')) {
+                return;
+            }
+            
             const button = document.getElementById('FreeThemeConfigButton');
             const toolbar = document.querySelector('#toolbarVIP');
             // 如果工具栏存在但按钮不存在，创建按钮
