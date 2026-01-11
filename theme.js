@@ -86,6 +86,7 @@
             medium: '6px',
             large: '8px',
         },
+        crazyMode: false,
     };
     
     // API 工具
@@ -149,6 +150,7 @@
                     lineHeight: parsed.lineHeight !== undefined ? parsed.lineHeight : defaultConfig.lineHeight,
                     spacing: parsed.spacing !== undefined ? parsed.spacing : defaultConfig.spacing,
                     borderRadius: { ...defaultConfig.borderRadius, ...(parsed.borderRadius || {}) },
+                    crazyMode: parsed.crazyMode !== undefined ? parsed.crazyMode : defaultConfig.crazyMode,
                 };
                 cacheTimestamp = now;
                 return configCache;
@@ -313,8 +315,14 @@
     }
     
     // 生成随机 16 进制颜色
-    function generateRandomColor(isDark = false) {
-        if (isDark) {
+    function generateRandomColor(isDark = false, crazyMode = false) {
+        if (crazyMode) {
+            // 疯狂模式：全范围随机颜色 (0-255)
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return rgbToHex(r, g, b);
+        } else if (isDark) {
             // 暗黑主题：生成较亮的颜色
             const r = 100 + Math.floor(Math.random() * 155);
             const g = 100 + Math.floor(Math.random() * 155);
@@ -391,13 +399,30 @@
     async function generateRandomColors(themeMode) {
         const config = await getConfig();
         const isDark = themeMode === 'dark';
+        const crazyMode = config.crazyMode || false;
         
-        const primary = generateRandomColor(isDark);
+        const primary = generateRandomColor(isDark, crazyMode);
         const primaryHover = generateHoverColor(primary, isDark);
         
         // 生成背景色（16 进制）
         let background, backgroundLight, backgroundDark, surface, surfaceHover;
-        if (isDark) {
+        if (crazyMode) {
+            // 疯狂模式：全范围随机颜色
+            const r1 = Math.floor(Math.random() * 256);
+            const g1 = Math.floor(Math.random() * 256);
+            const b1 = Math.floor(Math.random() * 256);
+            const r2 = Math.floor(Math.random() * 256);
+            const g2 = Math.floor(Math.random() * 256);
+            const b2 = Math.floor(Math.random() * 256);
+            const r3 = Math.floor(Math.random() * 256);
+            const g3 = Math.floor(Math.random() * 256);
+            const b3 = Math.floor(Math.random() * 256);
+            background = rgbToHex(r1, g1, b1);
+            backgroundLight = rgbToHex(r2, g2, b2);
+            backgroundDark = rgbToHex(r3, g3, b3);
+            surface = rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
+            surfaceHover = rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
+        } else if (isDark) {
             const bgBase = 20 + Math.floor(Math.random() * 30);
             background = rgbToHex(bgBase, bgBase, bgBase);
             backgroundLight = rgbToHex(bgBase + 10, bgBase + 10, bgBase + 10);
@@ -414,120 +439,154 @@
         }
         
         // 生成文本色（16 进制）
-        const textPrimary = isDark ? 
-            rgbToHex(
-                200 + Math.floor(Math.random() * 55),
-                200 + Math.floor(Math.random() * 55),
-                200 + Math.floor(Math.random() * 55)
-            ) :
-            rgbToHex(
-                20 + Math.floor(Math.random() * 35),
-                20 + Math.floor(Math.random() * 35),
-                20 + Math.floor(Math.random() * 35)
+        const textPrimary = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ? 
+                rgbToHex(
+                    200 + Math.floor(Math.random() * 55),
+                    200 + Math.floor(Math.random() * 55),
+                    200 + Math.floor(Math.random() * 55)
+                ) :
+                rgbToHex(
+                    20 + Math.floor(Math.random() * 35),
+                    20 + Math.floor(Math.random() * 35),
+                    20 + Math.floor(Math.random() * 35)
+                )
             );
-        const textSecondary = isDark ?
-            rgbToHex(
-                120 + Math.floor(Math.random() * 60),
-                120 + Math.floor(Math.random() * 60),
-                120 + Math.floor(Math.random() * 60)
-            ) :
-            rgbToHex(
-                80 + Math.floor(Math.random() * 60),
-                80 + Math.floor(Math.random() * 60),
-                80 + Math.floor(Math.random() * 60)
+        const textSecondary = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    120 + Math.floor(Math.random() * 60),
+                    120 + Math.floor(Math.random() * 60),
+                    120 + Math.floor(Math.random() * 60)
+                ) :
+                rgbToHex(
+                    80 + Math.floor(Math.random() * 60),
+                    80 + Math.floor(Math.random() * 60),
+                    80 + Math.floor(Math.random() * 60)
+                )
             );
-        const textDisabled = isDark ?
-            rgbToHex(
-                70 + Math.floor(Math.random() * 30),
-                70 + Math.floor(Math.random() * 30),
-                70 + Math.floor(Math.random() * 30)
-            ) :
-            rgbToHex(
-                150 + Math.floor(Math.random() * 50),
-                150 + Math.floor(Math.random() * 50),
-                150 + Math.floor(Math.random() * 50)
+        const textDisabled = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    70 + Math.floor(Math.random() * 30),
+                    70 + Math.floor(Math.random() * 30),
+                    70 + Math.floor(Math.random() * 30)
+                ) :
+                rgbToHex(
+                    150 + Math.floor(Math.random() * 50),
+                    150 + Math.floor(Math.random() * 50),
+                    150 + Math.floor(Math.random() * 50)
+                )
             );
         
         // 生成边框色（16 进制）
-        const borderColor = isDark ?
-            rgbToHex(
-                50 + Math.floor(Math.random() * 30),
-                50 + Math.floor(Math.random() * 30),
-                50 + Math.floor(Math.random() * 30)
-            ) :
-            rgbToHex(
-                200 + Math.floor(Math.random() * 30),
-                200 + Math.floor(Math.random() * 30),
-                200 + Math.floor(Math.random() * 30)
+        const borderColor = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    50 + Math.floor(Math.random() * 30),
+                    50 + Math.floor(Math.random() * 30),
+                    50 + Math.floor(Math.random() * 30)
+                ) :
+                rgbToHex(
+                    200 + Math.floor(Math.random() * 30),
+                    200 + Math.floor(Math.random() * 30),
+                    200 + Math.floor(Math.random() * 30)
+                )
             );
-        const borderColorHover = isDark ?
-            rgbToHex(
-                70 + Math.floor(Math.random() * 30),
-                70 + Math.floor(Math.random() * 30),
-                70 + Math.floor(Math.random() * 30)
-            ) :
-            rgbToHex(
-                170 + Math.floor(Math.random() * 30),
-                170 + Math.floor(Math.random() * 30),
-                170 + Math.floor(Math.random() * 30)
+        const borderColorHover = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    70 + Math.floor(Math.random() * 30),
+                    70 + Math.floor(Math.random() * 30),
+                    70 + Math.floor(Math.random() * 30)
+                ) :
+                rgbToHex(
+                    170 + Math.floor(Math.random() * 30),
+                    170 + Math.floor(Math.random() * 30),
+                    170 + Math.floor(Math.random() * 30)
+                )
             );
-        const borderColorLight = isDark ?
-            rgbToHex(
-                40 + Math.floor(Math.random() * 20),
-                40 + Math.floor(Math.random() * 20),
-                40 + Math.floor(Math.random() * 20)
-            ) :
-            rgbToHex(
-                220 + Math.floor(Math.random() * 20),
-                220 + Math.floor(Math.random() * 20),
-                220 + Math.floor(Math.random() * 20)
+        const borderColorLight = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    40 + Math.floor(Math.random() * 20),
+                    40 + Math.floor(Math.random() * 20),
+                    40 + Math.floor(Math.random() * 20)
+                ) :
+                rgbToHex(
+                    220 + Math.floor(Math.random() * 20),
+                    220 + Math.floor(Math.random() * 20),
+                    220 + Math.floor(Math.random() * 20)
+                )
             );
         
         // 生成代码块颜色（16 进制）
-        const codeBackground = isDark ?
-            rgbToHex(
-                30 + Math.floor(Math.random() * 20),
-                30 + Math.floor(Math.random() * 20),
-                30 + Math.floor(Math.random() * 20)
-            ) :
-            rgbToHex(
-                245 + Math.floor(Math.random() * 10),
-                245 + Math.floor(Math.random() * 10),
-                245 + Math.floor(Math.random() * 10)
+        const codeBackground = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    30 + Math.floor(Math.random() * 20),
+                    30 + Math.floor(Math.random() * 20),
+                    30 + Math.floor(Math.random() * 20)
+                ) :
+                rgbToHex(
+                    245 + Math.floor(Math.random() * 10),
+                    245 + Math.floor(Math.random() * 10),
+                    245 + Math.floor(Math.random() * 10)
+                )
             );
         const codeBorder = borderColor;
         
         // 生成选中文本颜色（16 进制）
-        const selectionBg = isDark ?
-            rgbToHex(
-                80 + Math.floor(Math.random() * 100),
-                80 + Math.floor(Math.random() * 100),
-                150 + Math.floor(Math.random() * 105)
-            ) :
-            rgbToHex(
-                150 + Math.floor(Math.random() * 105),
-                180 + Math.floor(Math.random() * 75),
-                220 + Math.floor(Math.random() * 35)
+        const selectionBg = crazyMode ?
+            rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
+            (isDark ?
+                rgbToHex(
+                    80 + Math.floor(Math.random() * 100),
+                    80 + Math.floor(Math.random() * 100),
+                    150 + Math.floor(Math.random() * 105)
+                ) :
+                rgbToHex(
+                    150 + Math.floor(Math.random() * 105),
+                    180 + Math.floor(Math.random() * 75),
+                    220 + Math.floor(Math.random() * 35)
+                )
             );
         const selectionText = textPrimary;
         
         // 生成阴影颜色（rgba格式）
         // 阴影通常是深色，随机生成低RGB值和合适的透明度
-        const shadowR = Math.floor(Math.random() * 50); // 0-49
-        const shadowG = Math.floor(Math.random() * 50);
-        const shadowB = Math.floor(Math.random() * 50);
+        const shadowR = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50); // 疯狂模式：0-255，正常：0-49
+        const shadowG = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50);
+        const shadowB = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50);
         
         // 明亮主题：透明度较低 (0.05-0.15)
         // 暗黑主题：透明度较高 (0.2-0.4)
-        const shadowAlpha = isDark ? 
-            (0.2 + Math.random() * 0.2).toFixed(2) : // 0.2-0.4
-            (0.05 + Math.random() * 0.1).toFixed(2); // 0.05-0.15
-        const shadowLightAlpha = isDark ?
-            (0.15 + Math.random() * 0.1).toFixed(2) : // 0.15-0.25
-            (0.03 + Math.random() * 0.04).toFixed(2); // 0.03-0.07
-        const shadowMediumAlpha = isDark ?
-            (0.2 + Math.random() * 0.1).toFixed(2) : // 0.2-0.3
-            (0.05 + Math.random() * 0.05).toFixed(2); // 0.05-0.1
+        // 疯狂模式：全范围透明度 (0-1)
+        const shadowAlpha = crazyMode ?
+            Math.random().toFixed(2) :
+            (isDark ? 
+                (0.2 + Math.random() * 0.2).toFixed(2) : // 0.2-0.4
+                (0.05 + Math.random() * 0.1).toFixed(2) // 0.05-0.15
+            );
+        const shadowLightAlpha = crazyMode ?
+            Math.random().toFixed(2) :
+            (isDark ?
+                (0.15 + Math.random() * 0.1).toFixed(2) : // 0.15-0.25
+                (0.03 + Math.random() * 0.04).toFixed(2) // 0.03-0.07
+            );
+        const shadowMediumAlpha = crazyMode ?
+            Math.random().toFixed(2) :
+            (isDark ?
+                (0.2 + Math.random() * 0.1).toFixed(2) : // 0.2-0.3
+                (0.05 + Math.random() * 0.05).toFixed(2) // 0.05-0.1
+            );
         
         const shadow = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowAlpha})`;
         const shadowLight = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowLightAlpha})`;
@@ -604,6 +663,7 @@
             lightMode: '明亮模式',
             darkMode: '暗黑模式',
             randomColors: '随机配色',
+            crazyMode: '疯狂模式',
             refreshConfig: '刷新配置',
             refreshing: '刷新中...',
             resetToDefault: '重置为默认',
@@ -668,6 +728,7 @@
             lightMode: 'Light Mode',
             darkMode: 'Dark Mode',
             randomColors: 'Random Colors',
+            crazyMode: 'Crazy Mode',
             refreshConfig: 'Refresh Config',
             refreshing: 'Refreshing...',
             resetToDefault: 'Reset to Default',
@@ -1550,11 +1611,129 @@
         }
     }
     
+    // 切换疯狂模式
+    async function toggleCrazyMode() {
+        const config = await getConfig();
+        const newCrazyMode = !config.crazyMode;
+        
+        await updateConfig({
+            crazyMode: newCrazyMode
+        });
+        
+        // 显示提示信息
+        const message = newCrazyMode ? '🎉 疯狂模式已开启！' : '💤 疯狂模式已关闭';
+        console.log(message);
+        
+        // 显示临时提示框
+        showNotification(message);
+    }
+    
+    // 显示通知
+    function showNotification(message) {
+        // 创建临时通知元素
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '12px 20px';
+        notification.style.backgroundColor = 'var(--b3-theme-background)';
+        notification.style.border = '1px solid var(--b3-border-color)';
+        notification.style.borderRadius = '6px';
+        notification.style.boxShadow = '0 2px 8px var(--b3-theme-shadow)';
+        notification.style.zIndex = '10000';
+        notification.style.fontSize = '14px';
+        notification.style.color = 'var(--b3-theme-text-primary)';
+        notification.style.pointerEvents = 'none';
+        
+        document.body.appendChild(notification);
+        
+        // 2秒后自动移除
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 2000);
+    }
+    
+    // 科乐美代码监听器（上上下下左右左右baba）
+    function initKonamiCode() {
+        const sequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'b', 'a'];
+        let currentSequence = [];
+        let timeoutId = null;
+        const TIMEOUT = 3000; // 3秒内必须完成序列
+        
+        function resetSequence() {
+            currentSequence = [];
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+        }
+        
+        function checkSequence(key) {
+            // 检查是否匹配当前位置
+            const expectedKey = sequence[currentSequence.length];
+            
+            if (key === expectedKey) {
+                // 按键匹配，添加到序列
+                currentSequence.push(key);
+                
+                // 检查是否完成整个序列
+                if (currentSequence.length === sequence.length) {
+                    resetSequence();
+                    toggleCrazyMode();
+                    return;
+                }
+            } else {
+                // 按键不匹配，重置序列
+                resetSequence();
+                
+                // 如果当前按键是序列的开始，则添加它
+                if (key === sequence[0]) {
+                    currentSequence.push(key);
+                }
+            }
+            
+            // 重置超时定时器
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(resetSequence, TIMEOUT);
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            // 忽略在输入框中的按键
+            const activeElement = document.activeElement;
+            if (activeElement && (
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'TEXTAREA' || 
+                activeElement.isContentEditable
+            )) {
+                return;
+            }
+            
+            // 将字母键转换为小写，保持箭头键不变
+            let key = e.key;
+            if (key.length === 1 && /[a-zA-Z]/.test(key)) {
+                key = key.toLowerCase();
+            }
+            checkSequence(key);
+        });
+    }
+    
     
     // 初始化
     function initTheme() {
         // 立即尝试创建按钮
         createConfigButton();
+        
+        // 初始化科乐美代码监听器
+        initKonamiCode();
         
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
