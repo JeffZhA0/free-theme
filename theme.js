@@ -1,13 +1,13 @@
 // FreeTheme 配置系统
-(function() {
+(function () {
     'use strict';
-    
+
     const CONFIG_PATH = '/conf/free-theme-config.json';
     let configCache = null;
     let cacheTimestamp = 0;
     const CACHE_DURATION = 5000;
     let pendingRequest = null;
-    
+
     // 默认配置
     const defaultConfig = {
         light: {
@@ -88,7 +88,7 @@
         },
         crazyMode: false,
     };
-    
+
     // API 工具
     async function putFile(path, content = '', isDir = false) {
         const formData = new FormData();
@@ -101,7 +101,7 @@
         });
         return await result.json();
     }
-    
+
     async function getFile(path) {
         try {
             const response = await fetch("/api/file/getFile", {
@@ -119,19 +119,19 @@
             return null;
         }
     }
-    
+
     // 获取配置
     async function getConfig() {
         const now = Date.now();
-        
+
         if (configCache && (now - cacheTimestamp) < CACHE_DURATION) {
             return configCache;
         }
-        
+
         if (pendingRequest) {
             return pendingRequest;
         }
-        
+
         pendingRequest = (async () => {
             try {
                 const content = await getFile(CONFIG_PATH);
@@ -140,7 +140,7 @@
                     cacheTimestamp = now;
                     return configCache;
                 }
-                
+
                 const parsed = JSON.parse(content);
                 configCache = {
                     light: { ...defaultConfig.light, ...(parsed.light || {}) },
@@ -162,10 +162,10 @@
                 pendingRequest = null;
             }
         })();
-        
+
         return pendingRequest;
     }
-    
+
     // 保存配置
     async function saveConfig(config) {
         try {
@@ -178,7 +178,7 @@
             return false;
         }
     }
-    
+
     // 更新配置
     async function updateConfig(updates) {
         const config = await getConfig();
@@ -189,106 +189,183 @@
         await saveConfig(newConfig);
         return newConfig;
     }
-    
+
     // 应用配置到 CSS 变量
     function applyConfig(config) {
         const root = document.documentElement;
+
+        // 检查当前主题是否是 free-theme
+        const html = document.documentElement;
+        const isCurrentTheme = (
+            html.getAttribute('data-light-theme') === 'free-theme' &&
+            html.getAttribute('data-dark-theme') === 'free-theme'
+        );
+
+        // 如果不是当前主题，移除 style 元素并返回
+        if (!isCurrentTheme) {
+            const styleElement = document.getElementById('snippetCSS-free-theme');
+            if (styleElement) {
+                styleElement.remove();
+            }
+            return;
+        }
+
         const themeMode = root.getAttribute('data-theme-mode') || 'light';
         const theme = config[themeMode] || config.light;
-        
-        // 应用主色调
-        root.style.setProperty('--b3-theme-primary', theme.primary);
-        root.style.setProperty('--b3-theme-primary-hover', theme.primaryHover || theme.primary);
-        
-        // 应用背景色
-        root.style.setProperty('--b3-theme-background', theme.background);
-        root.style.setProperty('--b3-theme-background-light', theme.backgroundLight);
-        root.style.setProperty('--b3-theme-background-dark', theme.backgroundDark);
-        root.style.setProperty('--b3-theme-surface', theme.surface || theme.background);
-        root.style.setProperty('--b3-theme-surface-hover', theme.surfaceHover || theme.backgroundLight);
-        
-        // 应用文本色
-        root.style.setProperty('--b3-theme-on-background', theme.onBackground || theme.textPrimary);
-        root.style.setProperty('--b3-theme-on-surface', theme.onSurface || theme.textPrimary);
-        root.style.setProperty('--b3-theme-on-primary', theme.onPrimary || '#ffffff');
-        root.style.setProperty('--b3-theme-text-primary', theme.textPrimary);
-        root.style.setProperty('--b3-theme-text-secondary', theme.textSecondary);
-        root.style.setProperty('--b3-theme-text-disabled', theme.textDisabled || theme.textSecondary);
-        
-        // 应用边框色
-        root.style.setProperty('--b3-border-color', theme.borderColor);
-        root.style.setProperty('--b3-border-color-hover', theme.borderColorHover);
-        root.style.setProperty('--b3-border-color-light', theme.borderColorLight || theme.borderColor);
-        
-        // 应用代码块
-        root.style.setProperty('--b3-theme-code-background', theme.codeBackground);
-        root.style.setProperty('--b3-theme-code-border', theme.codeBorder);
-        root.style.setProperty('--b3-theme-code-text', theme.textPrimary);
-        
-        // 应用选中文本
-        root.style.setProperty('--b3-theme-selection-bg', theme.selectionBg);
-        root.style.setProperty('--b3-theme-selection-text', theme.selectionText);
-        
-        // 应用阴影
-        root.style.setProperty('--b3-theme-shadow', theme.shadow);
-        root.style.setProperty('--b3-theme-shadow-light', theme.shadowLight);
-        root.style.setProperty('--b3-theme-shadow-medium', theme.shadowMedium);
-        
-        // 应用字体配置
+
+        // 获取或创建 style 元素
+        let styleElement = document.getElementById('snippetCSS-free-theme');
+        if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = 'snippetCSS-free-theme';
+            document.head.appendChild(styleElement);
+        }
+
+        // 构建 CSS 内容
         const fontFamily = `${config.fontFamily.english}, ${config.fontFamily.chinese}, monospace, sans-serif`;
-        root.style.setProperty('--b3-theme-font-family', fontFamily);
-        if (document.body) {
-            document.body.style.fontFamily = fontFamily;
-        }
-        
-        // 应用字体大小
-        if (config.fontSize) {
-            root.style.setProperty('--b3-theme-font-size', config.fontSize);
-        }
-        
-        // 应用行高
-        if (config.lineHeight) {
-            root.style.setProperty('--b3-theme-line-height', config.lineHeight);
-        }
-        
-        // 应用间距
-        if (config.spacing) {
-            root.style.setProperty('--b3-theme-spacing', config.spacing);
-        }
-        
-        // 应用圆角配置
-        if (config.borderRadius) {
-            root.style.setProperty('--b3-theme-border-radius-small', config.borderRadius.small);
-            root.style.setProperty('--b3-theme-border-radius-medium', config.borderRadius.medium);
-            root.style.setProperty('--b3-theme-border-radius-large', config.borderRadius.large);
-        }
-        
-    }
+        const cssContent = `
+:root,
+[data-theme-mode="${themeMode}"] {
+    /* 主色调 */
+    --b3-theme-primary: ${theme.primary};
+    --b3-theme-primary-hover: ${theme.primaryHover || theme.primary};
     
+    /* 背景色 */
+    --b3-theme-background: ${theme.background};
+    --b3-theme-background-light: ${theme.backgroundLight};
+    --b3-theme-background-dark: ${theme.backgroundDark};
+    --b3-theme-surface: ${theme.surface || theme.background};
+    --b3-theme-surface-hover: ${theme.surfaceHover || theme.backgroundLight};
+    
+    /* 文本色 */
+    --b3-theme-on-background: ${theme.onBackground || theme.textPrimary};
+    --b3-theme-on-surface: ${theme.onSurface || theme.textPrimary};
+    --b3-theme-on-primary: ${theme.onPrimary || '#ffffff'};
+    --b3-theme-text-primary: ${theme.textPrimary};
+    --b3-theme-text-secondary: ${theme.textSecondary};
+    --b3-theme-text-disabled: ${theme.textDisabled || theme.textSecondary};
+    
+    /* 边框色 */
+    --b3-border-color: ${theme.borderColor};
+    --b3-border-color-hover: ${theme.borderColorHover};
+    --b3-border-color-light: ${theme.borderColorLight || theme.borderColor};
+    
+    /* 代码块 */
+    --b3-theme-code-background: ${theme.codeBackground};
+    --b3-theme-code-border: ${theme.codeBorder};
+    --b3-theme-code-text: ${theme.textPrimary};
+    
+    /* 选中文本 */
+    --b3-theme-selection-bg: ${theme.selectionBg};
+    --b3-theme-selection-text: ${theme.selectionText};
+    
+    /* 阴影 */
+    --b3-theme-shadow: ${theme.shadow};
+    --b3-theme-shadow-light: ${theme.shadowLight};
+    --b3-theme-shadow-medium: ${theme.shadowMedium};
+    
+    /* 字体和排版 */
+    --b3-theme-font-family: ${fontFamily};
+    --b3-theme-font-size: ${config.fontSize || '14px'};
+    --b3-theme-line-height: ${config.lineHeight || '1.8'};
+    --b3-theme-spacing: ${config.spacing || '1em'};
+    
+    /* 圆角 */
+    --b3-theme-border-radius-small: ${config.borderRadius?.small || '4px'};
+    --b3-theme-border-radius-medium: ${config.borderRadius?.medium || '6px'};
+    --b3-theme-border-radius-large: ${config.borderRadius?.large || '8px'};
+}
+
+body {
+    font-family: ${fontFamily};
+}
+        `.trim();
+
+        styleElement.textContent = cssContent;
+    }
+
+    // 更新 destroyTheme 函数
+    function updateDestroyTheme() {
+        const html = document.documentElement;
+        if (
+            html.getAttribute('data-light-theme') === 'free-theme' &&
+            html.getAttribute('data-dark-theme') === 'free-theme'
+        ) {
+            window.destroyTheme = () => {
+                clearCache();
+                removeConfigWindow();
+                const button = document.getElementById('FreeThemeConfigButton');
+                if (button) {
+                    button.remove();
+                }
+                if (toolbarObserver) {
+                    toolbarObserver.disconnect();
+                    toolbarObserver = null;
+                }
+                // 移除动态样式元素
+                const styleElement = document.getElementById('snippetCSS-free-theme');
+                if (styleElement) {
+                    styleElement.remove();
+                }
+            };
+        } else {
+            // 如果切换到其他主题，立即移除 style 元素
+            const styleElement = document.getElementById('snippetCSS-free-theme');
+            if (styleElement) {
+                styleElement.remove();
+            }
+            delete window.destroyTheme;
+        }
+    }
+
     // 初始化配置
     async function initConfig() {
         try {
             const config = await getConfig();
             applyConfig(config);
-            
-            // 监听主题模式变化
-            const observer = new MutationObserver(async () => {
+
+            // 初始化时更新 destroyTheme
+            updateDestroyTheme();
+
+            // 监听主题模式变化（明暗模式切换）
+            const modeObserver = new MutationObserver(async () => {
                 const newConfig = await getConfig();
                 applyConfig(newConfig);
             });
-            
-            observer.observe(document.documentElement, {
+
+            modeObserver.observe(document.documentElement, {
                 attributes: true,
                 attributeFilter: ['data-theme-mode']
             });
-            
+
+            // 监听主题切换（data-light-theme 和 data-dark-theme）
+            const themeObserver = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (
+                        mutation.type === 'attributes' &&
+                        (
+                            mutation.attributeName === 'data-light-theme' ||
+                            mutation.attributeName === 'data-dark-theme'
+                        )
+                    ) {
+                        updateDestroyTheme();
+                        break;
+                    }
+                }
+            });
+
+            themeObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-light-theme', 'data-dark-theme']
+            });
+
             return config;
         } catch (error) {
             console.error('初始化配置失败:', error);
             return null;
         }
     }
-    
+
     // 重置配置
     async function resetConfig() {
         await saveConfig(JSON.parse(JSON.stringify(defaultConfig)));
@@ -298,14 +375,14 @@
         applyConfig(config);
         return config;
     }
-    
+
     // 清除缓存
     function clearCache() {
         configCache = null;
         cacheTimestamp = 0;
         pendingRequest = null;
     }
-    
+
     // RGB 转 16 进制辅助函数
     function rgbToHex(r, g, b) {
         return '#' + [r, g, b].map(x => {
@@ -313,7 +390,7 @@
             return hex.length === 1 ? '0' + hex : hex;
         }).join('');
     }
-    
+
     // 生成随机 16 进制颜色
     function generateRandomColor(isDark = false, crazyMode = false) {
         if (crazyMode) {
@@ -336,7 +413,7 @@
             return rgbToHex(r, g, b);
         }
     }
-    
+
     // 生成随机浅色（16 进制）
     function generateRandomLightColor(isDark = false) {
         if (isDark) {
@@ -353,7 +430,7 @@
             return rgbToHex(r, g, b);
         }
     }
-    
+
     // 生成随机深色（16 进制）
     function generateRandomDarkColor(isDark = false) {
         if (isDark) {
@@ -370,7 +447,7 @@
             return rgbToHex(r, g, b);
         }
     }
-    
+
     // 根据主色调生成合适的悬停颜色（稍微变亮或变暗）
     function generateHoverColor(primaryHex, isDark) {
         // 将十六进制转换为 RGB
@@ -382,28 +459,28 @@
                 b: parseInt(result[3], 16)
             } : null;
         }
-        
+
         const primaryRgb = hexToRgb(primaryHex);
         if (!primaryRgb) return primaryHex;
-        
+
         // 悬停颜色：在明亮主题下稍微变亮，在暗黑主题下稍微变暗
         const factor = isDark ? 0.9 : 1.1; // 暗黑主题变暗10%，明亮主题变亮10%
         const hoverR = Math.min(255, Math.max(0, Math.round(primaryRgb.r * factor)));
         const hoverG = Math.min(255, Math.max(0, Math.round(primaryRgb.g * factor)));
         const hoverB = Math.min(255, Math.max(0, Math.round(primaryRgb.b * factor)));
-        
+
         return rgbToHex(hoverR, hoverG, hoverB);
     }
-    
+
     // 生成随机配色方案（使用 16 进制）
     async function generateRandomColors(themeMode) {
         const config = await getConfig();
         const isDark = themeMode === 'dark';
         const crazyMode = config.crazyMode || false;
-        
+
         const primary = generateRandomColor(isDark, crazyMode);
         const primaryHover = generateHoverColor(primary, isDark);
-        
+
         // 生成背景色（16 进制）
         let background, backgroundLight, backgroundDark, surface, surfaceHover;
         if (crazyMode) {
@@ -437,11 +514,11 @@
             surface = background;
             surfaceHover = backgroundLight;
         }
-        
+
         // 生成文本色（16 进制）
         const textPrimary = crazyMode ?
             rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
-            (isDark ? 
+            (isDark ?
                 rgbToHex(
                     200 + Math.floor(Math.random() * 55),
                     200 + Math.floor(Math.random() * 55),
@@ -481,7 +558,7 @@
                     150 + Math.floor(Math.random() * 50)
                 )
             );
-        
+
         // 生成边框色（16 进制）
         const borderColor = crazyMode ?
             rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
@@ -525,7 +602,7 @@
                     220 + Math.floor(Math.random() * 20)
                 )
             );
-        
+
         // 生成代码块颜色（16 进制）
         const codeBackground = crazyMode ?
             rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
@@ -542,7 +619,7 @@
                 )
             );
         const codeBorder = borderColor;
-        
+
         // 生成选中文本颜色（16 进制）
         const selectionBg = crazyMode ?
             rgbToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)) :
@@ -559,19 +636,19 @@
                 )
             );
         const selectionText = textPrimary;
-        
+
         // 生成阴影颜色（rgba格式）
         // 阴影通常是深色，随机生成低RGB值和合适的透明度
         const shadowR = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50); // 疯狂模式：0-255，正常：0-49
         const shadowG = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50);
         const shadowB = crazyMode ? Math.floor(Math.random() * 256) : Math.floor(Math.random() * 50);
-        
+
         // 明亮主题：透明度较低 (0.05-0.15)
         // 暗黑主题：透明度较高 (0.2-0.4)
         // 疯狂模式：全范围透明度 (0-1)
         const shadowAlpha = crazyMode ?
             Math.random().toFixed(2) :
-            (isDark ? 
+            (isDark ?
                 (0.2 + Math.random() * 0.2).toFixed(2) : // 0.2-0.4
                 (0.05 + Math.random() * 0.1).toFixed(2) // 0.05-0.15
             );
@@ -587,11 +664,11 @@
                 (0.2 + Math.random() * 0.1).toFixed(2) : // 0.2-0.3
                 (0.05 + Math.random() * 0.05).toFixed(2) // 0.05-0.1
             );
-        
+
         const shadow = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowAlpha})`;
         const shadowLight = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowLightAlpha})`;
         const shadowMedium = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowMediumAlpha})`;
-        
+
         await updateConfig({
             [themeMode]: {
                 ...config[themeMode],
@@ -621,7 +698,7 @@
             }
         });
     }
-    
+
     // 导出全局 API
     window.FreeThemeConfig = {
         getConfig,
@@ -640,10 +717,10 @@
         // 生成随机配色
         generateRandomColors,
     };
-    
+
     // 保存观察器引用（需要在函数之前声明）
     let toolbarObserver = null;
-    
+
     // 检测语言（通过 HTML lang 属性）
     function getLanguage() {
         const lang = document.documentElement.lang || document.documentElement.getAttribute('lang') || '';
@@ -655,7 +732,7 @@
         }
         return 'en';
     }
-    
+
     // 文案对象
     const i18n = {
         'zh-CN': {
@@ -663,7 +740,6 @@
             lightMode: '明亮模式',
             darkMode: '暗黑模式',
             randomColors: '随机配色',
-            crazyMode: '疯狂模式',
             refreshConfig: '刷新配置',
             refreshing: '刷新中...',
             resetToDefault: '重置为默认',
@@ -728,7 +804,6 @@
             lightMode: 'Light Mode',
             darkMode: 'Dark Mode',
             randomColors: 'Random Colors',
-            crazyMode: 'Crazy Mode',
             refreshConfig: 'Refresh Config',
             refreshing: 'Refreshing...',
             resetToDefault: 'Reset to Default',
@@ -789,7 +864,7 @@
             },
         },
     };
-    
+
     // 获取当前语言的文案
     function t(key) {
         const lang = getLanguage();
@@ -800,26 +875,26 @@
         }
         return value !== undefined ? value : key;
     }
-    
+
     // 创建配置按钮
     let retryCount = 0;
     const maxRetries = 20;
-    
+
     function createConfigButton() {
         // 检查是否已存在按钮
         if (document.getElementById('FreeThemeConfigButton')) {
             return;
         }
-        
+
         // 检查 id 为 toolbar 的 div 标签的 class 中是否包含 "toolbar--browser"
         const toolbar = document.getElementById('toolbar');
         if (toolbar && toolbar.classList.contains('toolbar--browser')) {
             return;
         }
-        
+
         // 查找工具栏位置（参考 QYL 主题的方式）
         const targetElement = document.querySelector('#toolbarVIP');
-        
+
         if (!targetElement) {
             retryCount++;
             if (retryCount < maxRetries) {
@@ -830,10 +905,10 @@
             }
             return;
         }
-        
+
         // 重置重试计数
         retryCount = 0;
-        
+
         const button = document.createElement('div');
         button.id = 'FreeThemeConfigButton';
         button.className = 'toolbar__item ariaLabel';
@@ -848,12 +923,12 @@
                 <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
             </svg>
         `;
-        
+
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
             toggleConfigWindow();
         });
-        
+
         // 参考 QYL 主题的插入方式
         try {
             if (targetElement.parentNode) {
@@ -865,20 +940,20 @@
             console.error('FreeTheme: 创建配置按钮失败:', error);
         }
     }
-    
+
     // 监听 DOM 变化，确保按钮始终存在
     function watchForToolbar() {
         if (toolbarObserver) {
             toolbarObserver.disconnect();
         }
-        
+
         toolbarObserver = new MutationObserver(() => {
             // 检查 id 为 toolbar 的 div 标签的 class 中是否包含 "toolbar--browser"
             const toolbarDiv = document.getElementById('toolbar');
             if (toolbarDiv && toolbarDiv.classList.contains('toolbar--browser')) {
                 return;
             }
-            
+
             const button = document.getElementById('FreeThemeConfigButton');
             const toolbar = document.querySelector('#toolbarVIP');
             // 如果工具栏存在但按钮不存在，创建按钮
@@ -886,7 +961,7 @@
                 createConfigButton();
             }
         });
-        
+
         // 延迟启动观察器，避免频繁触发
         setTimeout(() => {
             if (toolbarObserver) {
@@ -896,17 +971,17 @@
                 });
             }
         }, 1000);
-        
+
         return toolbarObserver;
     }
-    
+
     // 创建配置窗口
     async function createConfigWindow() {
         const existingWindow = document.getElementById('FreeThemeConfigWindow');
         if (existingWindow) {
             return existingWindow;
         }
-        
+
         const window = document.createElement('div');
         window.id = 'FreeThemeConfigWindow';
         window.className = 'b3-menu';
@@ -917,7 +992,7 @@
         window.style.maxHeight = '80vh';
         window.style.display = 'flex';
         window.style.flexDirection = 'column';
-        
+
         const button = document.getElementById('FreeThemeConfigButton');
         if (button) {
             const buttonRect = button.getBoundingClientRect();
@@ -925,51 +1000,51 @@
             window.style.top = `${buttonRect.bottom + 5}px`;
             window.style.transform = 'translateX(-100%)';
         }
-        
+
         // 创建配置内容（异步）
         const content = await createConfigContent();
         window.appendChild(content);
-        
+
         // 点击外部关闭
         const handleClickOutside = (e) => {
             if (!window.contains(e.target) && e.target !== button) {
                 removeConfigWindow();
             }
         };
-        
+
         // ESC 键关闭
         const handleEsc = (e) => {
             if (e.key === 'Escape') {
                 removeConfigWindow();
             }
         };
-        
+
         setTimeout(() => {
             document.addEventListener('click', handleClickOutside);
             document.addEventListener('keydown', handleEsc);
         }, 100);
-        
+
         window._clickHandler = handleClickOutside;
         window._escHandler = handleEsc;
-        
+
         document.body.appendChild(window);
         return window;
     }
-    
+
     // 创建配置内容
     async function createConfigContent() {
         const config = await getConfig();
         const themeMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
         const theme = config[themeMode];
         const modeName = themeMode === 'light' ? t('lightMode') : t('darkMode');
-        
+
         // 创建外层容器
         const wrapper = document.createElement('div');
         wrapper.id = 'FreeThemeConfigWrapper';
         wrapper.style.display = 'flex';
         wrapper.style.flexDirection = 'column';
         wrapper.style.height = '100%';
-        
+
         // 创建固定头部区域
         const header = document.createElement('div');
         header.style.position = 'sticky';
@@ -979,7 +1054,7 @@
         header.style.padding = '12px';
         header.style.borderBottom = '1px solid var(--b3-border-color)';
         header.style.marginBottom = '0';
-        
+
         // 标题（显示当前主题模式）
         const title = document.createElement('div');
         title.textContent = t('title')(modeName);
@@ -987,13 +1062,13 @@
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '12px';
         header.appendChild(title);
-        
+
         // 按钮容器（固定在顶部）
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
         buttonContainer.style.gap = '8px';
         buttonContainer.style.marginBottom = '0';
-        
+
         // 随机配色按钮
         const randomBtn = document.createElement('button');
         randomBtn.className = 'b3-button';
@@ -1008,7 +1083,7 @@
             await refreshConfig();
         });
         buttonContainer.appendChild(randomBtn);
-        
+
         // 刷新按钮
         const refreshBtn = document.createElement('button');
         refreshBtn.className = 'b3-button';
@@ -1022,7 +1097,7 @@
             const originalHTML = refreshBtn.innerHTML;
             refreshBtn.innerHTML = `<span>${t('refreshing')}</span>`;
             refreshBtn.disabled = true;
-            
+
             try {
                 clearCache();
                 const newConfig = await getConfig();
@@ -1036,7 +1111,7 @@
             }
         });
         buttonContainer.appendChild(refreshBtn);
-        
+
         // 重置按钮
         const resetBtn = document.createElement('button');
         resetBtn.textContent = t('resetToDefault');
@@ -1050,22 +1125,22 @@
             }
         });
         buttonContainer.appendChild(resetBtn);
-        
+
         header.appendChild(buttonContainer);
         wrapper.appendChild(header);
-        
+
         // 创建可滚动内容区域
         const content = document.createElement('div');
         content.id = 'FreeThemeConfigContent';
         content.style.padding = '12px';
         content.style.overflowY = 'auto';
         content.style.flex = '1';
-        
+
         // 创建分组函数
         function createGroup(titleText, items) {
             const group = document.createElement('div');
             group.style.marginBottom = '16px';
-            
+
             const groupTitle = document.createElement('div');
             groupTitle.textContent = titleText;
             groupTitle.style.fontSize = '14px';
@@ -1075,15 +1150,15 @@
             groupTitle.style.paddingBottom = '4px';
             groupTitle.style.borderBottom = '1px solid var(--b3-border-color-light)';
             group.appendChild(groupTitle);
-            
+
             items.forEach(item => group.appendChild(item));
-            
+
             return group;
         }
-        
+
         // 批量创建颜色配置的辅助函数
         function createColorConfigs(items) {
-            return items.map(({label, key}) => 
+            return items.map(({ label, key }) =>
                 createColorSection(label, theme[key] || '', async (color) => {
                     await updateConfig({
                         [themeMode]: {
@@ -1095,10 +1170,10 @@
                 })
             );
         }
-        
+
         // 批量创建文本配置的辅助函数
         function createTextConfigs(items, configObj, configKey) {
-            return items.map(({label, key}) => 
+            return items.map(({ label, key }) =>
                 createTextSection(label, configObj[key] || '', async (value) => {
                     const update = {
                         [configKey]: {
@@ -1111,7 +1186,7 @@
                 })
             );
         }
-        
+
         // 常用英文字体列表（等宽字体栈）
         const englishFonts = [
             { value: "'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono'", label: 'Consolas / Monaco (默认)' },
@@ -1128,7 +1203,7 @@
             { value: "monospace", label: '系统等宽字体' },
             { value: "CUSTOM", label: '自定义...' },
         ];
-        
+
         // 常用中文字体列表（字体栈）
         const chineseFonts = [
             { value: "'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei'", label: '思源黑体 / 微软雅黑 (默认)' },
@@ -1147,12 +1222,12 @@
             { value: "serif", label: '系统衬线字体' },
             { value: "CUSTOM", label: '自定义...' },
         ];
-        
+
         // 创建字体选择器区域的函数
         function createFontSelectSection(label, value, options, onChange) {
             const section = document.createElement('div');
             section.style.marginBottom = '12px';
-            
+
             const labelDiv = document.createElement('div');
             labelDiv.textContent = label;
             labelDiv.style.fontSize = '13px';
@@ -1160,12 +1235,12 @@
             labelDiv.style.marginBottom = '6px';
             labelDiv.style.color = 'var(--b3-theme-text-secondary)';
             section.appendChild(labelDiv);
-            
+
             const container = document.createElement('div');
             container.style.display = 'flex';
             container.style.flexDirection = 'column';
             container.style.gap = '8px';
-            
+
             // 下拉选择器
             const select = document.createElement('select');
             select.style.width = '100%';
@@ -1177,7 +1252,7 @@
             select.style.backgroundColor = 'var(--b3-theme-background)';
             select.style.color = 'var(--b3-theme-text-primary)';
             select.style.cursor = 'pointer';
-            
+
             // 添加选项
             options.forEach(option => {
                 const optionElement = document.createElement('option');
@@ -1185,11 +1260,11 @@
                 optionElement.textContent = option.label;
                 select.appendChild(optionElement);
             });
-            
+
             // 检查当前值是否匹配某个选项
             const hasMatchingOption = options.some(opt => opt.value === value);
             let isCustom = false;
-            
+
             if (!hasMatchingOption && value) {
                 // 如果当前值不在选项中，添加一个自定义选项
                 const customOption = document.createElement('option');
@@ -1202,7 +1277,7 @@
                 select.value = value || options[0].value;
                 isCustom = select.value === 'CUSTOM';
             }
-            
+
             // 自定义输入框（初始隐藏，除非选择自定义）
             const textInput = document.createElement('input');
             textInput.type = 'text';
@@ -1215,7 +1290,7 @@
             textInput.style.fontFamily = 'monospace';
             textInput.style.display = isCustom ? 'block' : 'none';
             textInput.placeholder = '例如: \'Font Name\', \'Fallback Font\', sans-serif';
-            
+
             // 选择器变化事件
             select.addEventListener('change', (e) => {
                 if (e.target.value === 'CUSTOM') {
@@ -1227,7 +1302,7 @@
                     onChange(e.target.value);
                 }
             });
-            
+
             // 自定义输入框变化事件
             const handleTextChange = () => {
                 const inputValue = textInput.value.trim();
@@ -1235,67 +1310,67 @@
                     onChange(inputValue);
                 }
             };
-            
+
             textInput.addEventListener('change', handleTextChange);
             textInput.addEventListener('blur', handleTextChange);
-            
+
             container.appendChild(select);
             container.appendChild(textInput);
             section.appendChild(container);
-            
+
             return section;
         }
-        
+
         // 主色调分组
         content.appendChild(createGroup(t('groups.primary'), createColorConfigs([
-            {label: t('labels.primary'), key: 'primary'},
-            {label: t('labels.primaryHover'), key: 'primaryHover'},
+            { label: t('labels.primary'), key: 'primary' },
+            { label: t('labels.primaryHover'), key: 'primaryHover' },
         ])));
-        
+
         // 背景色分组
         content.appendChild(createGroup(t('groups.background'), createColorConfigs([
-            {label: t('labels.background'), key: 'background'},
-            {label: t('labels.backgroundLight'), key: 'backgroundLight'},
-            {label: t('labels.backgroundDark'), key: 'backgroundDark'},
-            {label: t('labels.surface'), key: 'surface'},
-            {label: t('labels.surfaceHover'), key: 'surfaceHover'},
+            { label: t('labels.background'), key: 'background' },
+            { label: t('labels.backgroundLight'), key: 'backgroundLight' },
+            { label: t('labels.backgroundDark'), key: 'backgroundDark' },
+            { label: t('labels.surface'), key: 'surface' },
+            { label: t('labels.surfaceHover'), key: 'surfaceHover' },
         ])));
-        
+
         // 文本色分组
         content.appendChild(createGroup(t('groups.text'), createColorConfigs([
-            {label: t('labels.textPrimary'), key: 'textPrimary'},
-            {label: t('labels.textSecondary'), key: 'textSecondary'},
-            {label: t('labels.textDisabled'), key: 'textDisabled'},
-            {label: t('labels.onBackground'), key: 'onBackground'},
-            {label: t('labels.onSurface'), key: 'onSurface'},
-            {label: t('labels.onPrimary'), key: 'onPrimary'},
+            { label: t('labels.textPrimary'), key: 'textPrimary' },
+            { label: t('labels.textSecondary'), key: 'textSecondary' },
+            { label: t('labels.textDisabled'), key: 'textDisabled' },
+            { label: t('labels.onBackground'), key: 'onBackground' },
+            { label: t('labels.onSurface'), key: 'onSurface' },
+            { label: t('labels.onPrimary'), key: 'onPrimary' },
         ])));
-        
+
         // 边框色分组
         content.appendChild(createGroup(t('groups.border'), createColorConfigs([
-            {label: t('labels.borderColor'), key: 'borderColor'},
-            {label: t('labels.borderColorHover'), key: 'borderColorHover'},
-            {label: t('labels.borderColorLight'), key: 'borderColorLight'},
+            { label: t('labels.borderColor'), key: 'borderColor' },
+            { label: t('labels.borderColorHover'), key: 'borderColorHover' },
+            { label: t('labels.borderColorLight'), key: 'borderColorLight' },
         ])));
-        
+
         // 代码块分组
         content.appendChild(createGroup(t('groups.code'), createColorConfigs([
-            {label: t('labels.codeBackground'), key: 'codeBackground'},
-            {label: t('labels.codeBorder'), key: 'codeBorder'},
+            { label: t('labels.codeBackground'), key: 'codeBackground' },
+            { label: t('labels.codeBorder'), key: 'codeBorder' },
         ])));
-        
+
         // 选中文本分组
         content.appendChild(createGroup(t('groups.selection'), createColorConfigs([
-            {label: t('labels.selectionBg'), key: 'selectionBg'},
-            {label: t('labels.selectionText'), key: 'selectionText'},
+            { label: t('labels.selectionBg'), key: 'selectionBg' },
+            { label: t('labels.selectionText'), key: 'selectionText' },
         ])));
-        
+
         // 阴影分组（使用文本输入，因为阴影是 rgba 格式）
         const shadowItems = [
-            {label: t('labels.shadow'), key: 'shadow'},
-            {label: t('labels.shadowLight'), key: 'shadowLight'},
-            {label: t('labels.shadowMedium'), key: 'shadowMedium'},
-        ].map(({label, key}) => 
+            { label: t('labels.shadow'), key: 'shadow' },
+            { label: t('labels.shadowLight'), key: 'shadowLight' },
+            { label: t('labels.shadowMedium'), key: 'shadowMedium' },
+        ].map(({ label, key }) =>
             createTextSection(label, theme[key] || '', async (value) => {
                 await updateConfig({
                     [themeMode]: {
@@ -1313,11 +1388,11 @@
             }
         });
         content.appendChild(createGroup(t('groups.shadow'), shadowItems));
-        
+
         // 字体配置分组（使用下拉选择器）
         const englishFontValue = config.fontFamily.english || defaultConfig.fontFamily.english;
         const chineseFontValue = config.fontFamily.chinese || defaultConfig.fontFamily.chinese;
-        
+
         const fontGroupItems = [
             createFontSelectSection(
                 t('labels.english'),
@@ -1348,9 +1423,9 @@
                 }
             ),
         ];
-        
+
         content.appendChild(createGroup(t('groups.font'), fontGroupItems));
-        
+
         // 字体大小配置
         content.appendChild(createGroup(t('groups.fontSize'), [
             createTextSection('', config.fontSize || defaultConfig.fontSize, async (value) => {
@@ -1359,7 +1434,7 @@
                 await refreshConfig();
             })
         ]));
-        
+
         // 行高配置
         content.appendChild(createGroup(t('groups.lineHeight'), [
             createTextSection('', config.lineHeight || defaultConfig.lineHeight, async (value) => {
@@ -1368,7 +1443,7 @@
                 await refreshConfig();
             })
         ]));
-        
+
         // 间距配置
         content.appendChild(createGroup(t('groups.spacing'), [
             createTextSection('', config.spacing || defaultConfig.spacing, async (value) => {
@@ -1377,25 +1452,25 @@
                 await refreshConfig();
             })
         ]));
-        
+
         // 圆角分组
         if (config.borderRadius) {
             content.appendChild(createGroup(t('groups.borderRadius'), createTextConfigs([
-                {label: t('labels.small'), key: 'small'},
-                {label: t('labels.medium'), key: 'medium'},
-                {label: t('labels.large'), key: 'large'},
+                { label: t('labels.small'), key: 'small' },
+                { label: t('labels.medium'), key: 'medium' },
+                { label: t('labels.large'), key: 'large' },
             ], config.borderRadius, 'borderRadius')));
         }
-        
+
         wrapper.appendChild(content);
         return wrapper;
     }
-    
+
     // 创建区域
     function createSection(title, children) {
         const section = document.createElement('div');
         section.style.marginBottom = '16px';
-        
+
         const label = document.createElement('div');
         label.textContent = title;
         label.style.fontSize = '13px';
@@ -1403,16 +1478,16 @@
         label.style.marginBottom = '8px';
         label.style.color = 'var(--b3-theme-text-secondary)';
         section.appendChild(label);
-        
+
         const container = document.createElement('div');
         container.style.display = 'flex';
         container.style.gap = '8px';
         children.forEach(child => container.appendChild(child));
         section.appendChild(container);
-        
+
         return section;
     }
-    
+
     // 创建按钮
     function createButton(text, active, onClick) {
         const btn = document.createElement('button');
@@ -1426,12 +1501,12 @@
         btn.addEventListener('click', onClick);
         return btn;
     }
-    
+
     // 创建颜色选择区域
     function createColorSection(label, value, onChange) {
         const section = document.createElement('div');
         section.style.marginBottom = '12px';
-        
+
         const labelDiv = document.createElement('div');
         labelDiv.textContent = label;
         labelDiv.style.fontSize = '13px';
@@ -1439,12 +1514,12 @@
         labelDiv.style.marginBottom = '6px';
         labelDiv.style.color = 'var(--b3-theme-text-secondary)';
         section.appendChild(labelDiv);
-        
+
         const container = document.createElement('div');
         container.style.display = 'flex';
         container.style.gap = '8px';
         container.style.alignItems = 'center';
-        
+
         const colorInput = document.createElement('input');
         colorInput.type = 'color';
         colorInput.value = value;
@@ -1458,7 +1533,7 @@
             onChange(e.target.value);
         });
         container.appendChild(colorInput);
-        
+
         const textInput = document.createElement('input');
         textInput.type = 'text';
         textInput.value = value;
@@ -1477,16 +1552,16 @@
             }
         });
         container.appendChild(textInput);
-        
+
         section.appendChild(container);
         return section;
     }
-    
+
     // 创建文本输入区域
     function createTextSection(label, value, onChange) {
         const section = document.createElement('div');
         section.style.marginBottom = '12px';
-        
+
         // 只有当 label 不为空时才创建标签
         if (label) {
             const labelDiv = document.createElement('div');
@@ -1497,7 +1572,7 @@
             labelDiv.style.color = 'var(--b3-theme-text-secondary)';
             section.appendChild(labelDiv);
         }
-        
+
         const textInput = document.createElement('input');
         textInput.type = 'text';
         textInput.value = value;
@@ -1511,10 +1586,10 @@
             onChange(e.target.value);
         });
         section.appendChild(textInput);
-        
+
         return section;
     }
-    
+
     // 切换配置窗口
     async function toggleConfigWindow() {
         const window = document.getElementById('FreeThemeConfigWindow');
@@ -1524,7 +1599,7 @@
             await createConfigWindow();
         }
     }
-    
+
     // 移除配置窗口
     function removeConfigWindow() {
         const window = document.getElementById('FreeThemeConfigWindow');
@@ -1538,7 +1613,7 @@
             window.remove();
         }
     }
-    
+
     // 刷新配置显示
     async function refreshConfig() {
         const configWindow = document.getElementById('FreeThemeConfigWindow');
@@ -1550,11 +1625,11 @@
             const savedTransform = configWindow.style.transform;
             const savedRight = configWindow.style.right;
             const savedBottom = configWindow.style.bottom;
-            
+
             // 保存内容区域的滚动位置
             const contentArea = document.getElementById('FreeThemeConfigContent');
             const savedScrollTop = contentArea ? contentArea.scrollTop : 0;
-            
+
             // 找到 wrapper（最外层容器）
             const oldWrapper = document.getElementById('FreeThemeConfigWrapper');
             if (oldWrapper) {
@@ -1566,7 +1641,7 @@
                 configWindow.innerHTML = '';
                 configWindow.appendChild(newWrapper);
             }
-            
+
             // 恢复窗口位置（使用实际位置，因为 style 属性可能为空）
             // 由于窗口是 position: fixed，getBoundingClientRect 返回的是相对于视口的位置
             configWindow.style.left = savedLeft || `${rect.left}px`;
@@ -1580,7 +1655,7 @@
             if (savedBottom) {
                 configWindow.style.bottom = savedBottom;
             }
-            
+
             // 恢复内容区域的滚动位置
             if (savedScrollTop > 0) {
                 // 使用 setTimeout 确保 DOM 更新完成后再设置滚动位置
@@ -1591,30 +1666,30 @@
                     }
                 }, 0);
             }
-            
+
             // 重新应用配置以确保 CSS 变量更新
             const config = await getConfig();
             applyConfig(config);
         }
     }
-    
+
     // 切换疯狂模式
     async function toggleCrazyMode() {
         const config = await getConfig();
         const newCrazyMode = !config.crazyMode;
-        
+
         await updateConfig({
             crazyMode: newCrazyMode
         });
-        
+
         // 显示提示信息
         const message = newCrazyMode ? '🎉 疯狂模式已开启！' : '💤 疯狂模式已关闭';
         console.log(message);
-        
+
         // 显示临时提示框
         showNotification(message);
     }
-    
+
     // 显示通知
     function showNotification(message) {
         // 创建临时通知元素
@@ -1632,9 +1707,9 @@
         notification.style.fontSize = '14px';
         notification.style.color = 'var(--b3-theme-text-primary)';
         notification.style.pointerEvents = 'none';
-        
+
         document.body.appendChild(notification);
-        
+
         // 2秒后自动移除
         setTimeout(() => {
             notification.style.opacity = '0';
@@ -1646,14 +1721,14 @@
             }, 300);
         }, 2000);
     }
-    
+
     // 科乐美代码监听器（上上下下左右左右baba）
     function initKonamiCode() {
         const sequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'b', 'a'];
         let currentSequence = [];
         let timeoutId = null;
         const TIMEOUT = 3000; // 3秒内必须完成序列
-        
+
         function resetSequence() {
             currentSequence = [];
             if (timeoutId) {
@@ -1661,15 +1736,15 @@
                 timeoutId = null;
             }
         }
-        
+
         function checkSequence(key) {
             // 检查是否匹配当前位置
             const expectedKey = sequence[currentSequence.length];
-            
+
             if (key === expectedKey) {
                 // 按键匹配，添加到序列
                 currentSequence.push(key);
-                
+
                 // 检查是否完成整个序列
                 if (currentSequence.length === sequence.length) {
                     resetSequence();
@@ -1679,31 +1754,31 @@
             } else {
                 // 按键不匹配，重置序列
                 resetSequence();
-                
+
                 // 如果当前按键是序列的开始，则添加它
                 if (key === sequence[0]) {
                     currentSequence.push(key);
                 }
             }
-            
+
             // 重置超时定时器
             if (timeoutId) {
                 clearTimeout(timeoutId);
             }
             timeoutId = setTimeout(resetSequence, TIMEOUT);
         }
-        
+
         document.addEventListener('keydown', (e) => {
             // 忽略在输入框中的按键
             const activeElement = document.activeElement;
             if (activeElement && (
-                activeElement.tagName === 'INPUT' || 
-                activeElement.tagName === 'TEXTAREA' || 
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA' ||
                 activeElement.isContentEditable
             )) {
                 return;
             }
-            
+
             // 将字母键转换为小写，保持箭头键不变
             let key = e.key;
             if (key.length === 1 && /[a-zA-Z]/.test(key)) {
@@ -1712,16 +1787,16 @@
             checkSequence(key);
         });
     }
-    
-    
+
+
     // 初始化
     function initTheme() {
         // 立即尝试创建按钮
         createConfigButton();
-        
+
         // 初始化科乐美代码监听器
         initKonamiCode();
-        
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 initConfig();
@@ -1739,26 +1814,12 @@
             setTimeout(createConfigButton, 500);
             setTimeout(createConfigButton, 1500);
         }
-        
+
         // 窗口加载完成后再次尝试
         window.addEventListener('load', () => {
             setTimeout(createConfigButton, 500);
         });
     }
-    
+
     initTheme();
-    
-    // 主题销毁
-    window.destroyTheme = () => {
-        clearCache();
-        removeConfigWindow();
-        const button = document.getElementById('FreeThemeConfigButton');
-        if (button) {
-            button.remove();
-        }
-        if (toolbarObserver) {
-            toolbarObserver.disconnect();
-            toolbarObserver = null;
-        }
-    };
 })();
