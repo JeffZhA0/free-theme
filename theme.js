@@ -19,7 +19,7 @@
             backgroundLight: '#f8f9fa',
             backgroundDark: '#f0f1f2',
             surface: '#ffffff',
-            surfaceHover: '#f8f9fa',
+            surfaceHover: '#e9ecef',
             // 文本色
             onBackground: '#212529',
             onSurface: '#343a40',
@@ -1002,13 +1002,7 @@
         randomBtn.style.alignItems = 'center';
         randomBtn.style.justifyContent = 'center';
         randomBtn.style.gap = '4px';
-        randomBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 4v6h6M23 20v-6h-6"></path>
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-            </svg>
-            <span>${t('randomColors')}</span>
-        `;
+        randomBtn.innerHTML = `<span>${t('randomColors')}</span>`;
         randomBtn.addEventListener('click', async () => {
             await generateRandomColors(themeMode);
             await refreshConfig();
@@ -1023,14 +1017,7 @@
         refreshBtn.style.alignItems = 'center';
         refreshBtn.style.justifyContent = 'center';
         refreshBtn.style.gap = '4px';
-        refreshBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 4v6h-6"></path>
-                <path d="M1 20v-6h6"></path>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-            <span>${t('refreshConfig')}</span>
-        `;
+        refreshBtn.innerHTML = `<span>${t('refreshConfig')}</span>`;
         refreshBtn.addEventListener('click', async () => {
             const originalHTML = refreshBtn.innerHTML;
             refreshBtn.innerHTML = `<span>${t('refreshing')}</span>`;
