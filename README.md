@@ -18,9 +18,18 @@ A fully customizable SiYuan note theme with light and dark modes, allowing you t
 
 ### Installation
 
-1. Open `Settings` → `Appearance` → `Theme` in SiYuan
-2. Click `Install from Marketplace` or download the theme files directly
-3. Place the theme folder in the `{workspace}/conf/appearance/themes/` directory
+#### Method 1: Install from Marketplace
+
+1. Open `Settings` → `Marketplace` → `Theme` in SiYuan
+2. Search for `Free Theme` and click Install
+3. Open `Settings` → `Appearance` → `Theme` in SiYuan
+4. Select `Free Theme` from the theme list
+
+#### Method 2: Manual Installation
+
+1. Download the theme files from the GitHub repository
+2. Place the theme folder in the `{workspace}/conf/appearance/themes/` directory
+3. Open `Settings` → `Appearance` → `Theme` in SiYuan
 4. Select `Free Theme` from the theme list
 
 ### Configuration Entry
