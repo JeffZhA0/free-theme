@@ -193,23 +193,6 @@
     // 应用配置到 CSS 变量
     function applyConfig(config) {
         const root = document.documentElement;
-
-        // 检查当前主题是否是 free-theme
-        const html = document.documentElement;
-        const isCurrentTheme = (
-            html.getAttribute('data-light-theme') === 'free-theme' &&
-            html.getAttribute('data-dark-theme') === 'free-theme'
-        );
-
-        // 如果不是当前主题，移除 style 元素并返回
-        if (!isCurrentTheme) {
-            const styleElement = document.getElementById('snippetCSS-free-theme');
-            if (styleElement) {
-                styleElement.remove();
-            }
-            return;
-        }
-
         const themeMode = root.getAttribute('data-theme-mode') || 'light';
         const theme = config[themeMode] || config.light;
 
@@ -284,38 +267,47 @@ body {
         styleElement.textContent = cssContent;
     }
 
-    // 更新 destroyTheme 函数
-    function updateDestroyTheme() {
-        const html = document.documentElement;
-        if (
-            html.getAttribute('data-light-theme') === 'free-theme' &&
-            html.getAttribute('data-dark-theme') === 'free-theme'
-        ) {
-            window.destroyTheme = () => {
-                clearCache();
-                removeConfigWindow();
-                const button = document.getElementById('FreeThemeConfigButton');
-                if (button) {
-                    button.remove();
-                }
-                if (toolbarObserver) {
-                    toolbarObserver.disconnect();
-                    toolbarObserver = null;
-                }
-                // 移除动态样式元素
-                const styleElement = document.getElementById('snippetCSS-free-theme');
-                if (styleElement) {
-                    styleElement.remove();
-                }
-            };
-        } else {
-            // 如果切换到其他主题，立即移除 style 元素
+    // 设置 destroyTheme 函数
+    function setupDestroyTheme() {
+        window.destroyTheme = () => {
+            // 清除缓存
+            clearCache();
+            
+            // 移除配置窗口
+            removeConfigWindow();
+            
+            // 移除配置按钮
+            const button = document.getElementById('FreeThemeConfigButton');
+            if (button) {
+                button.remove();
+            }
+            
+            // 断开所有观察器
+            if (toolbarObserver) {
+                toolbarObserver.disconnect();
+                toolbarObserver = null;
+            }
+            if (modeObserver) {
+                modeObserver.disconnect();
+                modeObserver = null;
+            }
+            if (themeObserver) {
+                themeObserver.disconnect();
+                themeObserver = null;
+            }
+            
+            // 移除科乐美代码监听器
+            if (konamiKeydownHandler) {
+                document.removeEventListener('keydown', konamiKeydownHandler);
+                konamiKeydownHandler = null;
+            }
+            
+            // 移除动态样式元素
             const styleElement = document.getElementById('snippetCSS-free-theme');
             if (styleElement) {
                 styleElement.remove();
             }
-            delete window.destroyTheme;
-        }
+        };
     }
 
     // 初始化配置
@@ -324,11 +316,11 @@ body {
             const config = await getConfig();
             applyConfig(config);
 
-            // 初始化时更新 destroyTheme
-            updateDestroyTheme();
+            // 设置 destroyTheme
+            setupDestroyTheme();
 
             // 监听主题模式变化（明暗模式切换）
-            const modeObserver = new MutationObserver(async () => {
+            modeObserver = new MutationObserver(async () => {
                 const newConfig = await getConfig();
                 applyConfig(newConfig);
             });
@@ -339,19 +331,9 @@ body {
             });
 
             // 监听主题切换（data-light-theme 和 data-dark-theme）
-            const themeObserver = new MutationObserver((mutations) => {
-                for (const mutation of mutations) {
-                    if (
-                        mutation.type === 'attributes' &&
-                        (
-                            mutation.attributeName === 'data-light-theme' ||
-                            mutation.attributeName === 'data-dark-theme'
-                        )
-                    ) {
-                        updateDestroyTheme();
-                        break;
-                    }
-                }
+            themeObserver = new MutationObserver(async () => {
+                const newConfig = await getConfig();
+                applyConfig(newConfig);
             });
 
             themeObserver.observe(document.documentElement, {
@@ -720,6 +702,9 @@ body {
 
     // 保存观察器引用（需要在函数之前声明）
     let toolbarObserver = null;
+    let modeObserver = null;
+    let themeObserver = null;
+    let konamiKeydownHandler = null;
 
     // 检测语言（通过 HTML lang 属性）
     function getLanguage() {
@@ -1768,7 +1753,8 @@ body {
             timeoutId = setTimeout(resetSequence, TIMEOUT);
         }
 
-        document.addEventListener('keydown', (e) => {
+        // 保存处理器引用以便后续移除
+        konamiKeydownHandler = (e) => {
             // 忽略在输入框中的按键
             const activeElement = document.activeElement;
             if (activeElement && (
@@ -1785,7 +1771,9 @@ body {
                 key = key.toLowerCase();
             }
             checkSequence(key);
-        });
+        };
+
+        document.addEventListener('keydown', konamiKeydownHandler);
     }
 
 
