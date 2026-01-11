@@ -1,4 +1,4 @@
-[English](README.md)
+[English](https://github.com/JeffZhA0/free-theme/blob/main/README.md)
 
 # 自由主题 (Free Theme)
 
@@ -207,7 +207,7 @@ free-theme/
 
 ## 📄 许可证
 
-查看 [LICENSE](LICENSE) 文件了解详情。
+查看 [LICENSE](https://github.com/JeffZhA0/free-theme/blob/main/LICENSE) 文件了解详情。
 
 ## 🤝 贡献
 

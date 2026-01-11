@@ -1,4 +1,4 @@
-[中文](README_zh_CN.md)
+[中文](https://github.com/JeffZhA0/free-theme/blob/main/README_zh_CN.md)
 
 # Free Theme
 
@@ -207,7 +207,7 @@ free-theme/
 
 ## 📄 License
 
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](https://github.com/JeffZhA0/free-theme/blob/main/LICENSE) file for details.
 
 ## 🤝 Contributing
 
