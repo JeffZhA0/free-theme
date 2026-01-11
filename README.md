@@ -51,8 +51,6 @@ The configuration window is divided into the following sections:
 
 **🎨 Primary Colors**
 - Primary color
-- Primary light color
-- Primary dark color
 - Primary hover color
 
 **🖼️ Background Colors**

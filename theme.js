@@ -13,8 +13,6 @@
         light: {
             // 主色调
             primary: '#d23f31',
-            primaryLight: '#f5e6e4',
-            primaryDark: '#b83226',
             primaryHover: '#c6392b',
             // 背景色
             background: '#ffffff',
@@ -36,7 +34,6 @@
             // 代码块
             codeBackground: '#f8f9fa',
             codeBorder: '#e9ecef',
-            codeText: '#212529',
             // 选中文本
             selectionBg: '#b3d4fc',
             selectionText: '#212529',
@@ -48,8 +45,6 @@
         dark: {
             // 主色调
             primary: '#ff6b6b',
-            primaryLight: '#4a2c2c',
-            primaryDark: '#ff5252',
             primaryHover: '#ff7a7a',
             // 背景色
             background: '#1e1e1e',
@@ -71,7 +66,6 @@
             // 代码块
             codeBackground: '#252526',
             codeBorder: '#3e3e42',
-            codeText: '#d4d4d4',
             // 选中文本
             selectionBg: '#264f78',
             selectionText: '#d4d4d4',
@@ -84,25 +78,9 @@
             english: "'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono'",
             chinese: "'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei'",
         },
-        fontSize: {
-            small: '12px',
-            normal: '14px',
-            medium: '16px',
-            large: '18px',
-            xlarge: '20px',
-        },
-        lineHeight: {
-            tight: '1.4',
-            normal: '1.6',
-            relaxed: '1.8',
-        },
-        spacing: {
-            xs: '4px',
-            sm: '8px',
-            md: '12px',
-            lg: '16px',
-            xl: '24px',
-        },
+        fontSize: '14px',
+        lineHeight: '1.8',
+        spacing: '1em',
         borderRadius: {
             small: '4px',
             medium: '6px',
@@ -171,6 +149,9 @@
                     light: { ...defaultConfig.light, ...(parsed.light || {}) },
                     dark: { ...defaultConfig.dark, ...(parsed.dark || {}) },
                     fontFamily: { ...defaultConfig.fontFamily, ...(parsed.fontFamily || {}) },
+                    fontSize: parsed.fontSize !== undefined ? parsed.fontSize : defaultConfig.fontSize,
+                    lineHeight: parsed.lineHeight !== undefined ? parsed.lineHeight : defaultConfig.lineHeight,
+                    spacing: parsed.spacing !== undefined ? parsed.spacing : defaultConfig.spacing,
                     borderRadius: { ...defaultConfig.borderRadius, ...(parsed.borderRadius || {}) },
                     transition: { ...defaultConfig.transition, ...(parsed.transition || {}) },
                 };
@@ -220,8 +201,6 @@
         
         // 应用主色调
         root.style.setProperty('--b3-theme-primary', theme.primary);
-        root.style.setProperty('--b3-theme-primary-light', theme.primaryLight);
-        root.style.setProperty('--b3-theme-primary-dark', theme.primaryDark);
         root.style.setProperty('--b3-theme-primary-hover', theme.primaryHover || theme.primary);
         
         // 应用背景色
@@ -247,7 +226,7 @@
         // 应用代码块
         root.style.setProperty('--b3-theme-code-background', theme.codeBackground);
         root.style.setProperty('--b3-theme-code-border', theme.codeBorder);
-        root.style.setProperty('--b3-theme-code-text', theme.codeText || theme.textPrimary);
+        root.style.setProperty('--b3-theme-code-text', theme.textPrimary);
         
         // 应用选中文本
         root.style.setProperty('--b3-theme-selection-bg', theme.selectionBg);
@@ -267,27 +246,17 @@
         
         // 应用字体大小
         if (config.fontSize) {
-            root.style.setProperty('--b3-theme-font-size-small', config.fontSize.small);
-            root.style.setProperty('--b3-theme-font-size-normal', config.fontSize.normal);
-            root.style.setProperty('--b3-theme-font-size-medium', config.fontSize.medium);
-            root.style.setProperty('--b3-theme-font-size-large', config.fontSize.large);
-            root.style.setProperty('--b3-theme-font-size-xlarge', config.fontSize.xlarge);
+            root.style.setProperty('--b3-theme-font-size', config.fontSize);
         }
         
         // 应用行高
         if (config.lineHeight) {
-            root.style.setProperty('--b3-theme-line-height-tight', config.lineHeight.tight);
-            root.style.setProperty('--b3-theme-line-height-normal', config.lineHeight.normal);
-            root.style.setProperty('--b3-theme-line-height-relaxed', config.lineHeight.relaxed);
+            root.style.setProperty('--b3-theme-line-height', config.lineHeight);
         }
         
         // 应用间距
         if (config.spacing) {
-            root.style.setProperty('--b3-theme-spacing-xs', config.spacing.xs);
-            root.style.setProperty('--b3-theme-spacing-sm', config.spacing.sm);
-            root.style.setProperty('--b3-theme-spacing-md', config.spacing.md);
-            root.style.setProperty('--b3-theme-spacing-lg', config.spacing.lg);
-            root.style.setProperty('--b3-theme-spacing-xl', config.spacing.xl);
+            root.style.setProperty('--b3-theme-spacing', config.spacing);
         }
         
         // 应用圆角配置
@@ -404,14 +373,37 @@
         }
     }
     
+    // 根据主色调生成合适的悬停颜色（稍微变亮或变暗）
+    function generateHoverColor(primaryHex, isDark) {
+        // 将十六进制转换为 RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        
+        const primaryRgb = hexToRgb(primaryHex);
+        if (!primaryRgb) return primaryHex;
+        
+        // 悬停颜色：在明亮主题下稍微变亮，在暗黑主题下稍微变暗
+        const factor = isDark ? 0.9 : 1.1; // 暗黑主题变暗10%，明亮主题变亮10%
+        const hoverR = Math.min(255, Math.max(0, Math.round(primaryRgb.r * factor)));
+        const hoverG = Math.min(255, Math.max(0, Math.round(primaryRgb.g * factor)));
+        const hoverB = Math.min(255, Math.max(0, Math.round(primaryRgb.b * factor)));
+        
+        return rgbToHex(hoverR, hoverG, hoverB);
+    }
+    
     // 生成随机配色方案（使用 16 进制）
     async function generateRandomColors(themeMode) {
         const config = await getConfig();
         const isDark = themeMode === 'dark';
         
         const primary = generateRandomColor(isDark);
-        const primaryLight = generateRandomLightColor(isDark);
-        const primaryDark = generateRandomDarkColor(isDark);
+        const primaryHover = generateHoverColor(primary, isDark);
         
         // 生成背景色（16 进制）
         let background, backgroundLight, backgroundDark, surface, surfaceHover;
@@ -514,24 +506,48 @@
                 245 + Math.floor(Math.random() * 10)
             );
         const codeBorder = borderColor;
-        const codeText = textPrimary;
         
-        // 生成选中文本颜色（16 进制，带透明度使用 rgba）
-        const selectionR = Math.floor(Math.random() * 255);
-        const selectionG = Math.floor(Math.random() * 255);
-        const selectionB = Math.floor(Math.random() * 255);
+        // 生成选中文本颜色（16 进制）
         const selectionBg = isDark ?
-            `rgba(${selectionR}, ${selectionG}, ${selectionB}, 0.5)` :
-            `rgba(${selectionR}, ${selectionG}, ${selectionB}, 0.4)`;
+            rgbToHex(
+                80 + Math.floor(Math.random() * 100),
+                80 + Math.floor(Math.random() * 100),
+                150 + Math.floor(Math.random() * 105)
+            ) :
+            rgbToHex(
+                150 + Math.floor(Math.random() * 105),
+                180 + Math.floor(Math.random() * 75),
+                220 + Math.floor(Math.random() * 35)
+            );
         const selectionText = textPrimary;
+        
+        // 生成阴影颜色（rgba格式）
+        // 阴影通常是深色，随机生成低RGB值和合适的透明度
+        const shadowR = Math.floor(Math.random() * 50); // 0-49
+        const shadowG = Math.floor(Math.random() * 50);
+        const shadowB = Math.floor(Math.random() * 50);
+        
+        // 明亮主题：透明度较低 (0.05-0.15)
+        // 暗黑主题：透明度较高 (0.2-0.4)
+        const shadowAlpha = isDark ? 
+            (0.2 + Math.random() * 0.2).toFixed(2) : // 0.2-0.4
+            (0.05 + Math.random() * 0.1).toFixed(2); // 0.05-0.15
+        const shadowLightAlpha = isDark ?
+            (0.15 + Math.random() * 0.1).toFixed(2) : // 0.15-0.25
+            (0.03 + Math.random() * 0.04).toFixed(2); // 0.03-0.07
+        const shadowMediumAlpha = isDark ?
+            (0.2 + Math.random() * 0.1).toFixed(2) : // 0.2-0.3
+            (0.05 + Math.random() * 0.05).toFixed(2); // 0.05-0.1
+        
+        const shadow = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowAlpha})`;
+        const shadowLight = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowLightAlpha})`;
+        const shadowMedium = `rgba(${shadowR}, ${shadowG}, ${shadowB}, ${shadowMediumAlpha})`;
         
         await updateConfig({
             [themeMode]: {
                 ...config[themeMode],
                 primary,
-                primaryLight,
-                primaryDark,
-                primaryHover: primary,
+                primaryHover,
                 background,
                 backgroundLight,
                 backgroundDark,
@@ -548,9 +564,11 @@
                 borderColorLight,
                 codeBackground,
                 codeBorder,
-                codeText,
                 selectionBg,
                 selectionText,
+                shadow,
+                shadowLight,
+                shadowMedium,
             }
         });
     }
@@ -618,8 +636,6 @@
             },
             labels: {
                 primary: '主色调',
-                primaryLight: '主色调浅色',
-                primaryDark: '主色调深色',
                 primaryHover: '主色调悬停',
                 background: '背景色',
                 backgroundLight: '浅色背景',
@@ -637,7 +653,6 @@
                 borderColorLight: '边框浅色',
                 codeBackground: '代码块背景',
                 codeBorder: '代码块边框',
-                codeText: '代码块文本',
                 selectionBg: '选中背景',
                 selectionText: '选中文本',
                 shadow: '阴影',
@@ -686,16 +701,14 @@
                 selection: '✨ Selection',
                 shadow: '🌑 Shadows',
                 font: '🔤 Fonts',
-                fontSize: '📏 Font Sizes',
-                lineHeight: '📐 Line Heights',
+                fontSize: '📏 Font Size',
+                lineHeight: '📐 Line Height',
                 spacing: '📊 Spacing',
                 borderRadius: '🔘 Border Radius',
                 transition: '⚡ Transitions',
             },
             labels: {
                 primary: 'Primary',
-                primaryLight: 'Primary Light',
-                primaryDark: 'Primary Dark',
                 primaryHover: 'Primary Hover',
                 background: 'Background',
                 backgroundLight: 'Light Background',
@@ -713,7 +726,6 @@
                 borderColorLight: 'Border Light',
                 codeBackground: 'Code Background',
                 codeBorder: 'Code Border',
-                codeText: 'Code Text',
                 selectionBg: 'Selection Background',
                 selectionText: 'Selection Text',
                 shadow: 'Shadow',
@@ -1083,8 +1095,6 @@
         // 主色调分组
         content.appendChild(createGroup(t('groups.primary'), createColorConfigs([
             {label: t('labels.primary'), key: 'primary'},
-            {label: t('labels.primaryLight'), key: 'primaryLight'},
-            {label: t('labels.primaryDark'), key: 'primaryDark'},
             {label: t('labels.primaryHover'), key: 'primaryHover'},
         ])));
         
@@ -1118,7 +1128,6 @@
         content.appendChild(createGroup(t('groups.code'), createColorConfigs([
             {label: t('labels.codeBackground'), key: 'codeBackground'},
             {label: t('labels.codeBorder'), key: 'codeBorder'},
-            {label: t('labels.codeText'), key: 'codeText'},
         ])));
         
         // 选中文本分组
@@ -1157,36 +1166,32 @@
             {label: t('labels.chinese'), key: 'chinese'},
         ], config.fontFamily, 'fontFamily')));
         
-        // 字体大小分组
-        if (config.fontSize) {
-            content.appendChild(createGroup(t('groups.fontSize'), createTextConfigs([
-                {label: t('labels.small'), key: 'small'},
-                {label: t('labels.normal'), key: 'normal'},
-                {label: t('labels.medium'), key: 'medium'},
-                {label: t('labels.large'), key: 'large'},
-                {label: t('labels.xlarge'), key: 'xlarge'},
-            ], config.fontSize, 'fontSize')));
-        }
+        // 字体大小配置
+        content.appendChild(createGroup(t('groups.fontSize'), [
+            createTextSection('', config.fontSize || defaultConfig.fontSize, async (value) => {
+                const newConfig = await updateConfig({ fontSize: value });
+                applyConfig(newConfig);
+                await refreshConfig();
+            })
+        ]));
         
-        // 行高分组
-        if (config.lineHeight) {
-            content.appendChild(createGroup(t('groups.lineHeight'), createTextConfigs([
-                {label: t('labels.tight'), key: 'tight'},
-                {label: t('labels.normal'), key: 'normal'},
-                {label: t('labels.relaxed'), key: 'relaxed'},
-            ], config.lineHeight, 'lineHeight')));
-        }
+        // 行高配置
+        content.appendChild(createGroup(t('groups.lineHeight'), [
+            createTextSection('', config.lineHeight || defaultConfig.lineHeight, async (value) => {
+                const newConfig = await updateConfig({ lineHeight: value });
+                applyConfig(newConfig);
+                await refreshConfig();
+            })
+        ]));
         
-        // 间距分组
-        if (config.spacing) {
-            content.appendChild(createGroup(t('groups.spacing'), createTextConfigs([
-                {label: t('labels.xs'), key: 'xs'},
-                {label: t('labels.sm'), key: 'sm'},
-                {label: t('labels.md'), key: 'md'},
-                {label: t('labels.lg'), key: 'lg'},
-                {label: t('labels.xl'), key: 'xl'},
-            ], config.spacing, 'spacing')));
-        }
+        // 间距配置
+        content.appendChild(createGroup(t('groups.spacing'), [
+            createTextSection('', config.spacing || defaultConfig.spacing, async (value) => {
+                const newConfig = await updateConfig({ spacing: value });
+                applyConfig(newConfig);
+                await refreshConfig();
+            })
+        ]));
         
         // 圆角分组
         if (config.borderRadius) {
@@ -1324,13 +1329,16 @@
         const section = document.createElement('div');
         section.style.marginBottom = '12px';
         
-        const labelDiv = document.createElement('div');
-        labelDiv.textContent = label;
-        labelDiv.style.fontSize = '13px';
-        labelDiv.style.fontWeight = '500';
-        labelDiv.style.marginBottom = '6px';
-        labelDiv.style.color = 'var(--b3-theme-text-secondary)';
-        section.appendChild(labelDiv);
+        // 只有当 label 不为空时才创建标签
+        if (label) {
+            const labelDiv = document.createElement('div');
+            labelDiv.textContent = label;
+            labelDiv.style.fontSize = '13px';
+            labelDiv.style.fontWeight = '500';
+            labelDiv.style.marginBottom = '6px';
+            labelDiv.style.color = 'var(--b3-theme-text-secondary)';
+            section.appendChild(labelDiv);
+        }
         
         const textInput = document.createElement('input');
         textInput.type = 'text';
@@ -1388,6 +1396,9 @@
                 configWindow.innerHTML = '';
                 configWindow.appendChild(newWrapper);
             }
+            // 重新应用配置以确保 CSS 变量更新
+            const config = await getConfig();
+            applyConfig(config);
         }
     }
     
