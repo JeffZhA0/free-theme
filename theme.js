@@ -580,8 +580,13 @@
     // 检测语言（通过 HTML lang 属性）
     function getLanguage() {
         const lang = document.documentElement.lang || document.documentElement.getAttribute('lang') || '';
-        // 如果是简体中文（zh-CN 或 zh），返回中文，否则返回英文
-        return (lang === 'zh-CN' || lang === 'zh') ? 'zh-CN' : 'en';
+        // 转换为小写并标准化，支持多种中文格式：zh-CN, zh_CN, zh-Hans, zh-Hans-CN, zh 等
+        const langLower = lang.toLowerCase();
+        // 检查是否以 zh 开头（支持各种中文变体）
+        if (langLower.startsWith('zh')) {
+            return 'zh-CN';
+        }
+        return 'en';
     }
     
     // 文案对象
@@ -1385,6 +1390,7 @@
             }
         }
     }
+    
     
     // 初始化
     function initTheme() {

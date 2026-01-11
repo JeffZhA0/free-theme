@@ -419,6 +419,18 @@ img:hover {
     padding: 12px;
     margin: 0;
     box-shadow: 0 2px 4px var(--b3-theme-shadow-light);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* 按钮容器 */
+#FreeThemeConfigWrapper > div:first-child > div:last-child {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 /* 可滚动内容区域 */
@@ -456,11 +468,32 @@ img:hover {
     font-size: 13px;
     cursor: pointer;
     transition: var(--b3-transition-fast);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-#FreeThemeConfigContent button:hover {
+#FreeThemeConfigContent button:hover,
+#FreeThemeConfigWrapper button:hover {
     background-color: var(--b3-theme-surface-hover);
     border-color: var(--b3-border-color-hover);
+}
+
+/* 头部按钮容器中的按钮 */
+#FreeThemeConfigWrapper button {
+    box-sizing: border-box;
+}
+
+#FreeThemeConfigWrapper > div:first-child > div:last-child > button {
+    width: 100%;
+    min-width: 0;
+}
+
+#FreeThemeConfigWrapper > div:first-child > div:last-child > button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #FreeThemeConfigContent input[type="text"] {
