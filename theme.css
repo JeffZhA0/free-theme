@@ -430,6 +430,7 @@ img:hover {
     padding: 12px;
     padding-right: 4px;
     flex: 1;
+    box-sizing: border-box;
 }
 
 /* 配置窗口滚动条样式 */
@@ -466,6 +467,8 @@ img:hover {
     background-color: var(--b3-theme-background);
     color: var(--b3-theme-text-primary);
     border: 1px solid var(--b3-border-color);
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 #FreeThemeConfigContent input[type="text"]:focus {
