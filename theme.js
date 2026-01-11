@@ -577,6 +577,180 @@
     // 保存观察器引用（需要在函数之前声明）
     let toolbarObserver = null;
     
+    // 检测语言（通过 HTML lang 属性）
+    function getLanguage() {
+        const lang = document.documentElement.lang || document.documentElement.getAttribute('lang') || '';
+        // 如果是简体中文（zh-CN 或 zh），返回中文，否则返回英文
+        return (lang === 'zh-CN' || lang === 'zh') ? 'zh-CN' : 'en';
+    }
+    
+    // 文案对象
+    const i18n = {
+        'zh-CN': {
+            title: (mode) => `FreeTheme 配置 (${mode})`,
+            lightMode: '明亮模式',
+            darkMode: '暗黑模式',
+            randomColors: '随机配色',
+            refreshConfig: '刷新配置',
+            refreshing: '刷新中...',
+            resetToDefault: '重置为默认',
+            confirmReset: '确定要重置为默认配置吗？',
+            buttonAriaLabel: 'FreeTheme 配置',
+            groups: {
+                primary: '🎨 主色调',
+                background: '🖼️ 背景色',
+                text: '📝 文本色',
+                border: '🔲 边框色',
+                code: '💻 代码块',
+                selection: '✨ 选中文本',
+                shadow: '🌑 阴影',
+                font: '🔤 字体',
+                fontSize: '📏 字体大小',
+                lineHeight: '📐 行高',
+                spacing: '📊 间距',
+                borderRadius: '🔘 圆角',
+                transition: '⚡ 过渡动画',
+            },
+            labels: {
+                primary: '主色调',
+                primaryLight: '主色调浅色',
+                primaryDark: '主色调深色',
+                primaryHover: '主色调悬停',
+                background: '背景色',
+                backgroundLight: '浅色背景',
+                backgroundDark: '深色背景',
+                surface: '表面色',
+                surfaceHover: '表面悬停',
+                textPrimary: '主要文本色',
+                textSecondary: '次要文本色',
+                textDisabled: '禁用文本色',
+                onBackground: '背景上文本',
+                onSurface: '表面上文本',
+                onPrimary: '主色上文本',
+                borderColor: '边框色',
+                borderColorHover: '边框悬停',
+                borderColorLight: '边框浅色',
+                codeBackground: '代码块背景',
+                codeBorder: '代码块边框',
+                codeText: '代码块文本',
+                selectionBg: '选中背景',
+                selectionText: '选中文本',
+                shadow: '阴影',
+                shadowLight: '浅阴影',
+                shadowMedium: '中阴影',
+                english: '英文字体',
+                chinese: '中文字体',
+                small: '小号',
+                normal: '正常',
+                medium: '中等',
+                large: '大号',
+                xlarge: '超大',
+                tight: '紧凑',
+                relaxed: '宽松',
+                xs: '超小',
+                sm: '小',
+                md: '中',
+                lg: '大',
+                xl: '超大',
+                defaultTransition: '默认过渡',
+                fastTransition: '快速过渡',
+            },
+            transitionDesc: {
+                title: '说明：',
+                default: '<strong>默认过渡</strong>：用于大多数元素的过渡效果，如背景色、颜色变化等',
+                fast: '<strong>快速过渡</strong>：用于需要快速响应的交互，如按钮悬停、输入框聚焦等',
+                example: '格式示例：',
+            },
+        },
+        'en': {
+            title: (mode) => `FreeTheme Config (${mode})`,
+            lightMode: 'Light Mode',
+            darkMode: 'Dark Mode',
+            randomColors: 'Random Colors',
+            refreshConfig: 'Refresh Config',
+            refreshing: 'Refreshing...',
+            resetToDefault: 'Reset to Default',
+            confirmReset: 'Are you sure you want to reset to default configuration?',
+            buttonAriaLabel: 'FreeTheme Config',
+            groups: {
+                primary: '🎨 Primary Colors',
+                background: '🖼️ Background Colors',
+                text: '📝 Text Colors',
+                border: '🔲 Border Colors',
+                code: '💻 Code Blocks',
+                selection: '✨ Selection',
+                shadow: '🌑 Shadows',
+                font: '🔤 Fonts',
+                fontSize: '📏 Font Sizes',
+                lineHeight: '📐 Line Heights',
+                spacing: '📊 Spacing',
+                borderRadius: '🔘 Border Radius',
+                transition: '⚡ Transitions',
+            },
+            labels: {
+                primary: 'Primary',
+                primaryLight: 'Primary Light',
+                primaryDark: 'Primary Dark',
+                primaryHover: 'Primary Hover',
+                background: 'Background',
+                backgroundLight: 'Light Background',
+                backgroundDark: 'Dark Background',
+                surface: 'Surface',
+                surfaceHover: 'Surface Hover',
+                textPrimary: 'Primary Text',
+                textSecondary: 'Secondary Text',
+                textDisabled: 'Disabled Text',
+                onBackground: 'Text on Background',
+                onSurface: 'Text on Surface',
+                onPrimary: 'Text on Primary',
+                borderColor: 'Border',
+                borderColorHover: 'Border Hover',
+                borderColorLight: 'Border Light',
+                codeBackground: 'Code Background',
+                codeBorder: 'Code Border',
+                codeText: 'Code Text',
+                selectionBg: 'Selection Background',
+                selectionText: 'Selection Text',
+                shadow: 'Shadow',
+                shadowLight: 'Light Shadow',
+                shadowMedium: 'Medium Shadow',
+                english: 'English Font',
+                chinese: 'Chinese Font',
+                small: 'Small',
+                normal: 'Normal',
+                medium: 'Medium',
+                large: 'Large',
+                xlarge: 'XLarge',
+                tight: 'Tight',
+                relaxed: 'Relaxed',
+                xs: 'XS',
+                sm: 'SM',
+                md: 'MD',
+                lg: 'LG',
+                xl: 'XL',
+                defaultTransition: 'Default Transition',
+                fastTransition: 'Fast Transition',
+            },
+            transitionDesc: {
+                title: 'Description:',
+                default: '<strong>Default Transition</strong>: For most element transitions, such as background color, color changes, etc.',
+                fast: '<strong>Fast Transition</strong>: For quick-response interactions, such as button hover, input focus, etc.',
+                example: 'Format example:',
+            },
+        },
+    };
+    
+    // 获取当前语言的文案
+    function t(key) {
+        const lang = getLanguage();
+        const keys = key.split('.');
+        let value = i18n[lang];
+        for (const k of keys) {
+            value = value?.[k];
+        }
+        return value !== undefined ? value : key;
+    }
+    
     // 创建配置按钮
     let retryCount = 0;
     const maxRetries = 20;
@@ -613,7 +787,7 @@
         const button = document.createElement('div');
         button.id = 'FreeThemeConfigButton';
         button.className = 'toolbar__item ariaLabel';
-        button.setAttribute('aria-label', 'FreeTheme 配置');
+        button.setAttribute('aria-label', t('buttonAriaLabel'));
         button.style.cursor = 'pointer';
         button.style.display = 'flex';
         button.style.alignItems = 'center';
@@ -737,7 +911,7 @@
         const config = await getConfig();
         const themeMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
         const theme = config[themeMode];
-        const modeName = themeMode === 'light' ? '明亮模式' : '暗黑模式';
+        const modeName = themeMode === 'light' ? t('lightMode') : t('darkMode');
         
         // 创建外层容器
         const wrapper = document.createElement('div');
@@ -758,7 +932,7 @@
         
         // 标题（显示当前主题模式）
         const title = document.createElement('div');
-        title.textContent = `FreeTheme 配置 (${modeName})`;
+        title.textContent = t('title')(modeName);
         title.style.fontSize = '16px';
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '12px';
@@ -783,7 +957,7 @@
                 <path d="M1 4v6h6M23 20v-6h-6"></path>
                 <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
             </svg>
-            <span>随机配色</span>
+            <span>${t('randomColors')}</span>
         `;
         randomBtn.addEventListener('click', async () => {
             await generateRandomColors(themeMode);
@@ -805,11 +979,11 @@
                 <path d="M1 20v-6h6"></path>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>刷新配置</span>
+            <span>${t('refreshConfig')}</span>
         `;
         refreshBtn.addEventListener('click', async () => {
             const originalHTML = refreshBtn.innerHTML;
-            refreshBtn.innerHTML = '<span>刷新中...</span>';
+            refreshBtn.innerHTML = `<span>${t('refreshing')}</span>`;
             refreshBtn.disabled = true;
             
             try {
@@ -828,11 +1002,11 @@
         
         // 重置按钮
         const resetBtn = document.createElement('button');
-        resetBtn.textContent = '重置为默认';
+        resetBtn.textContent = t('resetToDefault');
         resetBtn.className = 'b3-button';
         resetBtn.style.flex = '1';
         resetBtn.addEventListener('click', async () => {
-            if (confirm('确定要重置为默认配置吗？')) {
+            if (confirm(t('confirmReset'))) {
                 await resetConfig();
                 removeConfigWindow();
                 setTimeout(() => toggleConfigWindow(), 300);
@@ -902,57 +1076,57 @@
         }
         
         // 主色调分组
-        content.appendChild(createGroup('🎨 主色调', createColorConfigs([
-            {label: '主色调', key: 'primary'},
-            {label: '主色调浅色', key: 'primaryLight'},
-            {label: '主色调深色', key: 'primaryDark'},
-            {label: '主色调悬停', key: 'primaryHover'},
+        content.appendChild(createGroup(t('groups.primary'), createColorConfigs([
+            {label: t('labels.primary'), key: 'primary'},
+            {label: t('labels.primaryLight'), key: 'primaryLight'},
+            {label: t('labels.primaryDark'), key: 'primaryDark'},
+            {label: t('labels.primaryHover'), key: 'primaryHover'},
         ])));
         
         // 背景色分组
-        content.appendChild(createGroup('🖼️ 背景色', createColorConfigs([
-            {label: '背景色', key: 'background'},
-            {label: '浅色背景', key: 'backgroundLight'},
-            {label: '深色背景', key: 'backgroundDark'},
-            {label: '表面色', key: 'surface'},
-            {label: '表面悬停', key: 'surfaceHover'},
+        content.appendChild(createGroup(t('groups.background'), createColorConfigs([
+            {label: t('labels.background'), key: 'background'},
+            {label: t('labels.backgroundLight'), key: 'backgroundLight'},
+            {label: t('labels.backgroundDark'), key: 'backgroundDark'},
+            {label: t('labels.surface'), key: 'surface'},
+            {label: t('labels.surfaceHover'), key: 'surfaceHover'},
         ])));
         
         // 文本色分组
-        content.appendChild(createGroup('📝 文本色', createColorConfigs([
-            {label: '主要文本色', key: 'textPrimary'},
-            {label: '次要文本色', key: 'textSecondary'},
-            {label: '禁用文本色', key: 'textDisabled'},
-            {label: '背景上文本', key: 'onBackground'},
-            {label: '表面上文本', key: 'onSurface'},
-            {label: '主色上文本', key: 'onPrimary'},
+        content.appendChild(createGroup(t('groups.text'), createColorConfigs([
+            {label: t('labels.textPrimary'), key: 'textPrimary'},
+            {label: t('labels.textSecondary'), key: 'textSecondary'},
+            {label: t('labels.textDisabled'), key: 'textDisabled'},
+            {label: t('labels.onBackground'), key: 'onBackground'},
+            {label: t('labels.onSurface'), key: 'onSurface'},
+            {label: t('labels.onPrimary'), key: 'onPrimary'},
         ])));
         
         // 边框色分组
-        content.appendChild(createGroup('🔲 边框色', createColorConfigs([
-            {label: '边框色', key: 'borderColor'},
-            {label: '边框悬停', key: 'borderColorHover'},
-            {label: '边框浅色', key: 'borderColorLight'},
+        content.appendChild(createGroup(t('groups.border'), createColorConfigs([
+            {label: t('labels.borderColor'), key: 'borderColor'},
+            {label: t('labels.borderColorHover'), key: 'borderColorHover'},
+            {label: t('labels.borderColorLight'), key: 'borderColorLight'},
         ])));
         
         // 代码块分组
-        content.appendChild(createGroup('💻 代码块', createColorConfigs([
-            {label: '代码块背景', key: 'codeBackground'},
-            {label: '代码块边框', key: 'codeBorder'},
-            {label: '代码块文本', key: 'codeText'},
+        content.appendChild(createGroup(t('groups.code'), createColorConfigs([
+            {label: t('labels.codeBackground'), key: 'codeBackground'},
+            {label: t('labels.codeBorder'), key: 'codeBorder'},
+            {label: t('labels.codeText'), key: 'codeText'},
         ])));
         
         // 选中文本分组
-        content.appendChild(createGroup('✨ 选中文本', createColorConfigs([
-            {label: '选中背景', key: 'selectionBg'},
-            {label: '选中文本', key: 'selectionText'},
+        content.appendChild(createGroup(t('groups.selection'), createColorConfigs([
+            {label: t('labels.selectionBg'), key: 'selectionBg'},
+            {label: t('labels.selectionText'), key: 'selectionText'},
         ])));
         
         // 阴影分组（使用文本输入，因为阴影是 rgba 格式）
         const shadowItems = [
-            {label: '阴影', key: 'shadow'},
-            {label: '浅阴影', key: 'shadowLight'},
-            {label: '中阴影', key: 'shadowMedium'},
+            {label: t('labels.shadow'), key: 'shadow'},
+            {label: t('labels.shadowLight'), key: 'shadowLight'},
+            {label: t('labels.shadowMedium'), key: 'shadowMedium'},
         ].map(({label, key}) => 
             createTextSection(label, theme[key] || '', async (value) => {
                 await updateConfig({
@@ -970,59 +1144,59 @@
                 input.placeholder = 'rgba(0, 0, 0, 0.1)';
             }
         });
-        content.appendChild(createGroup('🌑 阴影', shadowItems));
+        content.appendChild(createGroup(t('groups.shadow'), shadowItems));
         
         // 字体配置分组
-        content.appendChild(createGroup('🔤 字体', createTextConfigs([
-            {label: '英文字体', key: 'english'},
-            {label: '中文字体', key: 'chinese'},
+        content.appendChild(createGroup(t('groups.font'), createTextConfigs([
+            {label: t('labels.english'), key: 'english'},
+            {label: t('labels.chinese'), key: 'chinese'},
         ], config.fontFamily, 'fontFamily')));
         
         // 字体大小分组
         if (config.fontSize) {
-            content.appendChild(createGroup('📏 字体大小', createTextConfigs([
-                {label: '小号', key: 'small'},
-                {label: '正常', key: 'normal'},
-                {label: '中等', key: 'medium'},
-                {label: '大号', key: 'large'},
-                {label: '超大', key: 'xlarge'},
+            content.appendChild(createGroup(t('groups.fontSize'), createTextConfigs([
+                {label: t('labels.small'), key: 'small'},
+                {label: t('labels.normal'), key: 'normal'},
+                {label: t('labels.medium'), key: 'medium'},
+                {label: t('labels.large'), key: 'large'},
+                {label: t('labels.xlarge'), key: 'xlarge'},
             ], config.fontSize, 'fontSize')));
         }
         
         // 行高分组
         if (config.lineHeight) {
-            content.appendChild(createGroup('📐 行高', createTextConfigs([
-                {label: '紧凑', key: 'tight'},
-                {label: '正常', key: 'normal'},
-                {label: '宽松', key: 'relaxed'},
+            content.appendChild(createGroup(t('groups.lineHeight'), createTextConfigs([
+                {label: t('labels.tight'), key: 'tight'},
+                {label: t('labels.normal'), key: 'normal'},
+                {label: t('labels.relaxed'), key: 'relaxed'},
             ], config.lineHeight, 'lineHeight')));
         }
         
         // 间距分组
         if (config.spacing) {
-            content.appendChild(createGroup('📊 间距', createTextConfigs([
-                {label: '超小', key: 'xs'},
-                {label: '小', key: 'sm'},
-                {label: '中', key: 'md'},
-                {label: '大', key: 'lg'},
-                {label: '超大', key: 'xl'},
+            content.appendChild(createGroup(t('groups.spacing'), createTextConfigs([
+                {label: t('labels.xs'), key: 'xs'},
+                {label: t('labels.sm'), key: 'sm'},
+                {label: t('labels.md'), key: 'md'},
+                {label: t('labels.lg'), key: 'lg'},
+                {label: t('labels.xl'), key: 'xl'},
             ], config.spacing, 'spacing')));
         }
         
         // 圆角分组
         if (config.borderRadius) {
-            content.appendChild(createGroup('🔘 圆角', createTextConfigs([
-                {label: '小圆角', key: 'small'},
-                {label: '中圆角', key: 'medium'},
-                {label: '大圆角', key: 'large'},
+            content.appendChild(createGroup(t('groups.borderRadius'), createTextConfigs([
+                {label: t('labels.small'), key: 'small'},
+                {label: t('labels.medium'), key: 'medium'},
+                {label: t('labels.large'), key: 'large'},
             ], config.borderRadius, 'borderRadius')));
         }
         
         // 过渡动画分组（带说明）
         if (config.transition) {
-            const transitionGroup = createGroup('⚡ 过渡动画', createTextConfigs([
-                {label: '默认过渡', key: 'default'},
-                {label: '快速过渡', key: 'fast'},
+            const transitionGroup = createGroup(t('groups.transition'), createTextConfigs([
+                {label: t('labels.defaultTransition'), key: 'default'},
+                {label: t('labels.fastTransition'), key: 'fast'},
             ], config.transition, 'transition'));
             
             // 添加说明
@@ -1035,11 +1209,11 @@
             transitionDesc.style.borderRadius = '4px';
             transitionDesc.style.lineHeight = '1.5';
             transitionDesc.innerHTML = `
-                <strong>说明：</strong><br>
-                • <strong>默认过渡</strong>：用于大多数元素的过渡效果，如背景色、颜色变化等<br>
-                • <strong>快速过渡</strong>：用于需要快速响应的交互，如按钮悬停、输入框聚焦等<br>
+                <strong>${t('transitionDesc.title')}</strong><br>
+                • ${t('transitionDesc.default')}<br>
+                • ${t('transitionDesc.fast')}<br>
                 <br>
-                格式示例：<code>all 0.2s cubic-bezier(0.4, 0, 0.2, 1)</code>
+                ${t('transitionDesc.example')} <code>all 0.2s cubic-bezier(0.4, 0, 0.2, 1)</code>
             `;
             transitionGroup.appendChild(transitionDesc);
             content.appendChild(transitionGroup);
