@@ -9,8 +9,8 @@ A fully customizable SiYuan note theme with light and dark modes, allowing you t
 - 🎨 **Dual Mode Support**: Perfect support for both light and dark theme modes
 - 🎯 **Visual Configuration**: Easily configure all colors and styles through a graphical interface
 - 🎲 **Random Color Scheme**: Generate random color schemes with one click
-- 🔧 **Rich Configuration Options**: Support for configuring primary colors, backgrounds, text colors, borders, code blocks, selection, shadows, etc.
-- 🔤 **Font Configuration**: Monospace fonts for English, Source Han Sans for Chinese
+- 🔧 **Rich Configuration Options**: Support for configuring primary colors, backgrounds, text colors, borders, code blocks, selection, shadows, fonts, typography, etc.
+- 🔤 **Font Configuration**: Monospace fonts for English, Source Han Sans for Chinese, supports custom fonts
 - 💾 **Persistent Configuration**: Configurations are automatically saved and remain effective after refresh
 - 🔄 **Real-time Preview**: Changes take effect immediately, WYSIWYG
 
@@ -76,7 +76,6 @@ The configuration window is divided into the following sections:
 **💻 Code Blocks**
 - Code background
 - Code border
-- Code text
 
 **✨ Selection**
 - Selection background
@@ -90,24 +89,22 @@ The configuration window is divided into the following sections:
 #### 3. Other Settings
 
 **🔤 Fonts**
-- English font: Monospace font configuration
-- Chinese font: Chinese font configuration
+- English font: Select monospace fonts via dropdown selector, supports custom fonts
+- Chinese font: Select Chinese fonts via dropdown selector, supports custom fonts
 
-**📏 Font Sizes**
-- Small, Normal, Medium, Large, XLarge
+**📏 Font Size**
+- Single value configuration (e.g., `14px`)
 
-**📐 Line Heights**
-- Tight, Normal, Relaxed
+**📐 Line Height**
+- Single value configuration (e.g., `1.8`)
 
 **📊 Spacing**
-- XS, SM, MD, LG, XL
+- Single value configuration (e.g., `1em`)
 
 **🔘 Border Radius**
-- Small, Medium, Large
-
-**⚡ Transitions**
-- Default transition: For most element transitions
-- Fast transition: For quick-response interactions
+- Small
+- Medium
+- Large
 
 ## 🎨 Usage Tips
 
@@ -127,29 +124,6 @@ Configurations are automatically saved to `/conf/free-theme-config.json`. You ca
 - Sync configuration files between devices
 - Backup and restore configurations
 
-## 💻 Programming Interface
-
-The theme provides a JavaScript API that can be used in the browser console:
-
-```javascript
-// Get current configuration
-const config = await window.FreeThemeConfig.getConfig();
-
-// Update configuration
-await window.FreeThemeConfig.updateConfig({
-    light: {
-        primary: '#007bff',
-        background: '#ffffff',
-    }
-});
-
-// Reset to default configuration
-await window.FreeThemeConfig.resetConfig();
-
-// Generate random color scheme
-await window.FreeThemeConfig.generateRandomColors('light');
-```
-
 ## 📁 Configuration File
 
 Configuration file location: `/conf/free-theme-config.json`
@@ -160,25 +134,67 @@ Configuration file structure:
 {
   "light": {
     "primary": "#d23f31",
+    "primaryHover": "#c6392b",
     "background": "#ffffff",
+    "backgroundLight": "#f8f9fa",
+    "backgroundDark": "#f0f1f2",
+    "surface": "#ffffff",
+    "surfaceHover": "#f8f9fa",
     "textPrimary": "#212529",
-    ...
+    "textSecondary": "#6c757d",
+    "textDisabled": "#adb5bd",
+    "onBackground": "#212529",
+    "onSurface": "#343a40",
+    "onPrimary": "#ffffff",
+    "borderColor": "#dee2e6",
+    "borderColorHover": "#adb5bd",
+    "borderColorLight": "#e9ecef",
+    "codeBackground": "#f8f9fa",
+    "codeBorder": "#e9ecef",
+    "selectionBg": "#b3d4fc",
+    "selectionText": "#212529",
+    "shadow": "rgba(0, 0, 0, 0.1)",
+    "shadowLight": "rgba(0, 0, 0, 0.05)",
+    "shadowMedium": "rgba(0, 0, 0, 0.08)"
   },
   "dark": {
     "primary": "#ff6b6b",
+    "primaryHover": "#ff7a7a",
     "background": "#1e1e1e",
+    "backgroundLight": "#252526",
+    "backgroundDark": "#2d2d30",
+    "surface": "#252526",
+    "surfaceHover": "#2d2d30",
     "textPrimary": "#d4d4d4",
-    ...
+    "textSecondary": "#858585",
+    "textDisabled": "#505050",
+    "onBackground": "#d4d4d4",
+    "onSurface": "#cccccc",
+    "onPrimary": "#ffffff",
+    "borderColor": "#3e3e42",
+    "borderColorHover": "#505050",
+    "borderColorLight": "#2d2d30",
+    "codeBackground": "#252526",
+    "codeBorder": "#3e3e42",
+    "selectionBg": "#264f78",
+    "selectionText": "#d4d4d4",
+    "shadow": "rgba(0, 0, 0, 0.3)",
+    "shadowLight": "rgba(0, 0, 0, 0.2)",
+    "shadowMedium": "rgba(0, 0, 0, 0.25)"
   },
   "fontFamily": {
     "english": "'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono'",
     "chinese": "'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei'"
   },
-  "fontSize": {
-    "small": "12px",
-    "normal": "14px",
-    ...
-  }
+  "fontSize": "14px",
+  "lineHeight": "1.8",
+  "spacing": "1em",
+  "borderRadius": {
+    "small": "4px",
+    "medium": "6px",
+    "large": "8px"
+  },
+  "crazyMode": false
 }
 ```
 
@@ -204,6 +220,10 @@ free-theme/
 3. Refresh the theme in SiYuan or restart the application
 
 ## 📝 Changelog
+
+### v1.1.0
+- 🔧 Optimized configuration system
+- 🐛 Fixed known issues
 
 ### v1.0.0
 - ✨ Initial release
