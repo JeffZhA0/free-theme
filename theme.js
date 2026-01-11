@@ -86,10 +86,6 @@
             medium: '6px',
             large: '8px',
         },
-        transition: {
-            default: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            fast: 'all 0.15s ease',
-        },
     };
     
     // API 工具
@@ -153,7 +149,6 @@
                     lineHeight: parsed.lineHeight !== undefined ? parsed.lineHeight : defaultConfig.lineHeight,
                     spacing: parsed.spacing !== undefined ? parsed.spacing : defaultConfig.spacing,
                     borderRadius: { ...defaultConfig.borderRadius, ...(parsed.borderRadius || {}) },
-                    transition: { ...defaultConfig.transition, ...(parsed.transition || {}) },
                 };
                 cacheTimestamp = now;
                 return configCache;
@@ -266,11 +261,6 @@
             root.style.setProperty('--b3-theme-border-radius-large', config.borderRadius.large);
         }
         
-        // 应用过渡动画配置
-        if (config.transition) {
-            root.style.setProperty('--b3-transition', config.transition.default);
-            root.style.setProperty('--b3-transition-fast', config.transition.fast);
-        }
     }
     
     // 初始化配置
@@ -632,7 +622,6 @@
                 lineHeight: '📐 行高',
                 spacing: '📊 间距',
                 borderRadius: '🔘 圆角',
-                transition: '⚡ 过渡动画',
             },
             labels: {
                 primary: '主色调',
@@ -672,14 +661,6 @@
                 md: '中',
                 lg: '大',
                 xl: '超大',
-                defaultTransition: '默认过渡',
-                fastTransition: '快速过渡',
-            },
-            transitionDesc: {
-                title: '说明：',
-                default: '<strong>默认过渡</strong>：用于大多数元素的过渡效果，如背景色、颜色变化等',
-                fast: '<strong>快速过渡</strong>：用于需要快速响应的交互，如按钮悬停、输入框聚焦等',
-                example: '格式示例：',
             },
         },
         'en': {
@@ -705,7 +686,6 @@
                 lineHeight: '📐 Line Height',
                 spacing: '📊 Spacing',
                 borderRadius: '🔘 Border Radius',
-                transition: '⚡ Transitions',
             },
             labels: {
                 primary: 'Primary',
@@ -745,14 +725,6 @@
                 md: 'MD',
                 lg: 'LG',
                 xl: 'XL',
-                defaultTransition: 'Default Transition',
-                fastTransition: 'Fast Transition',
-            },
-            transitionDesc: {
-                title: 'Description:',
-                default: '<strong>Default Transition</strong>: For most element transitions, such as background color, color changes, etc.',
-                fast: '<strong>Fast Transition</strong>: For quick-response interactions, such as button hover, input focus, etc.',
-                example: 'Format example:',
             },
         },
     };
@@ -1092,6 +1064,140 @@
             );
         }
         
+        // 常用英文字体列表（等宽字体栈）
+        const englishFonts = [
+            { value: "'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono'", label: 'Consolas / Monaco (默认)' },
+            { value: "'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New'", label: 'JetBrains Mono' },
+            { value: "'Fira Code', 'Consolas', 'Monaco', 'Courier New'", label: 'Fira Code' },
+            { value: "'Source Code Pro', 'Consolas', 'Monaco', 'Courier New'", label: 'Source Code Pro' },
+            { value: "'Cascadia Code', 'Consolas', 'Monaco', 'Courier New'", label: 'Cascadia Code' },
+            { value: "'Courier New', 'Courier', monospace", label: 'Courier New' },
+            { value: "'Monaco', 'Menlo', 'Courier New', monospace", label: 'Monaco (macOS)' },
+            { value: "'Menlo', 'Monaco', 'Courier New', monospace", label: 'Menlo (macOS)' },
+            { value: "'DejaVu Sans Mono', 'Courier New', monospace", label: 'DejaVu Sans Mono' },
+            { value: "'Liberation Mono', 'Courier New', monospace", label: 'Liberation Mono' },
+            { value: "'Inconsolata', 'Courier New', monospace", label: 'Inconsolata' },
+            { value: "monospace", label: '系统等宽字体' },
+            { value: "CUSTOM", label: '自定义...' },
+        ];
+        
+        // 常用中文字体列表（字体栈）
+        const chineseFonts = [
+            { value: "'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei'", label: '思源黑体 / 微软雅黑 (默认)' },
+            { value: "'Microsoft YaHei', 'SimHei', sans-serif", label: '微软雅黑' },
+            { value: "'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei'", label: '苹方 (macOS/iOS)' },
+            { value: "'Hiragino Sans GB', 'Microsoft YaHei', 'SimHei'", label: '冬青黑体 / 微软雅黑' },
+            { value: "'STHeiti', 'SimHei', sans-serif", label: '华文黑体 / 黑体' },
+            { value: "'SimSun', 'NSimSun', serif", label: '宋体' },
+            { value: "'KaiTi', '楷体', serif", label: '楷体' },
+            { value: "'FangSong', '仿宋', serif", label: '仿宋' },
+            { value: "'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif", label: '文泉驿微米黑' },
+            { value: "'Noto Sans SC', 'Microsoft YaHei', sans-serif", label: 'Noto Sans SC' },
+            { value: "'Microsoft JhengHei', 'Microsoft YaHei'", label: '微软正黑体 (繁体)' },
+            { value: "'STSong', 'SimSun', serif", label: '华文宋体 / 宋体' },
+            { value: "sans-serif", label: '系统无衬线字体' },
+            { value: "serif", label: '系统衬线字体' },
+            { value: "CUSTOM", label: '自定义...' },
+        ];
+        
+        // 创建字体选择器区域的函数
+        function createFontSelectSection(label, value, options, onChange) {
+            const section = document.createElement('div');
+            section.style.marginBottom = '12px';
+            
+            const labelDiv = document.createElement('div');
+            labelDiv.textContent = label;
+            labelDiv.style.fontSize = '13px';
+            labelDiv.style.fontWeight = '500';
+            labelDiv.style.marginBottom = '6px';
+            labelDiv.style.color = 'var(--b3-theme-text-secondary)';
+            section.appendChild(labelDiv);
+            
+            const container = document.createElement('div');
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.gap = '8px';
+            
+            // 下拉选择器
+            const select = document.createElement('select');
+            select.style.width = '100%';
+            select.style.padding = '6px 8px';
+            select.style.border = '1px solid var(--b3-border-color)';
+            select.style.borderRadius = '4px';
+            select.style.fontSize = '13px';
+            select.style.fontFamily = 'inherit';
+            select.style.backgroundColor = 'var(--b3-theme-background)';
+            select.style.color = 'var(--b3-theme-text-primary)';
+            select.style.cursor = 'pointer';
+            
+            // 添加选项
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.label;
+                select.appendChild(optionElement);
+            });
+            
+            // 检查当前值是否匹配某个选项
+            const hasMatchingOption = options.some(opt => opt.value === value);
+            let isCustom = false;
+            
+            if (!hasMatchingOption && value) {
+                // 如果当前值不在选项中，添加一个自定义选项
+                const customOption = document.createElement('option');
+                customOption.value = value;
+                customOption.textContent = `自定义: ${value.length > 40 ? value.substring(0, 40) + '...' : value}`;
+                customOption.selected = true;
+                select.insertBefore(customOption, select.lastElementChild);
+                isCustom = true;
+            } else {
+                select.value = value || options[0].value;
+                isCustom = select.value === 'CUSTOM';
+            }
+            
+            // 自定义输入框（初始隐藏，除非选择自定义）
+            const textInput = document.createElement('input');
+            textInput.type = 'text';
+            textInput.value = isCustom ? value : '';
+            textInput.style.width = '100%';
+            textInput.style.padding = '6px 8px';
+            textInput.style.border = '1px solid var(--b3-border-color)';
+            textInput.style.borderRadius = '4px';
+            textInput.style.fontSize = '13px';
+            textInput.style.fontFamily = 'monospace';
+            textInput.style.display = isCustom ? 'block' : 'none';
+            textInput.placeholder = '例如: \'Font Name\', \'Fallback Font\', sans-serif';
+            
+            // 选择器变化事件
+            select.addEventListener('change', (e) => {
+                if (e.target.value === 'CUSTOM') {
+                    textInput.style.display = 'block';
+                    textInput.focus();
+                    textInput.value = value || '';
+                } else {
+                    textInput.style.display = 'none';
+                    onChange(e.target.value);
+                }
+            });
+            
+            // 自定义输入框变化事件
+            const handleTextChange = () => {
+                const inputValue = textInput.value.trim();
+                if (inputValue) {
+                    onChange(inputValue);
+                }
+            };
+            
+            textInput.addEventListener('change', handleTextChange);
+            textInput.addEventListener('blur', handleTextChange);
+            
+            container.appendChild(select);
+            container.appendChild(textInput);
+            section.appendChild(container);
+            
+            return section;
+        }
+        
         // 主色调分组
         content.appendChild(createGroup(t('groups.primary'), createColorConfigs([
             {label: t('labels.primary'), key: 'primary'},
@@ -1160,11 +1266,42 @@
         });
         content.appendChild(createGroup(t('groups.shadow'), shadowItems));
         
-        // 字体配置分组
-        content.appendChild(createGroup(t('groups.font'), createTextConfigs([
-            {label: t('labels.english'), key: 'english'},
-            {label: t('labels.chinese'), key: 'chinese'},
-        ], config.fontFamily, 'fontFamily')));
+        // 字体配置分组（使用下拉选择器）
+        const englishFontValue = config.fontFamily.english || defaultConfig.fontFamily.english;
+        const chineseFontValue = config.fontFamily.chinese || defaultConfig.fontFamily.chinese;
+        
+        const fontGroupItems = [
+            createFontSelectSection(
+                t('labels.english'),
+                englishFontValue,
+                englishFonts,
+                async (value) => {
+                    await updateConfig({
+                        fontFamily: {
+                            ...config.fontFamily,
+                            english: value,
+                        }
+                    });
+                    await refreshConfig();
+                }
+            ),
+            createFontSelectSection(
+                t('labels.chinese'),
+                chineseFontValue,
+                chineseFonts,
+                async (value) => {
+                    await updateConfig({
+                        fontFamily: {
+                            ...config.fontFamily,
+                            chinese: value,
+                        }
+                    });
+                    await refreshConfig();
+                }
+            ),
+        ];
+        
+        content.appendChild(createGroup(t('groups.font'), fontGroupItems));
         
         // 字体大小配置
         content.appendChild(createGroup(t('groups.fontSize'), [
@@ -1200,33 +1337,6 @@
                 {label: t('labels.medium'), key: 'medium'},
                 {label: t('labels.large'), key: 'large'},
             ], config.borderRadius, 'borderRadius')));
-        }
-        
-        // 过渡动画分组（带说明）
-        if (config.transition) {
-            const transitionGroup = createGroup(t('groups.transition'), createTextConfigs([
-                {label: t('labels.defaultTransition'), key: 'default'},
-                {label: t('labels.fastTransition'), key: 'fast'},
-            ], config.transition, 'transition'));
-            
-            // 添加说明
-            const transitionDesc = document.createElement('div');
-            transitionDesc.style.fontSize = '12px';
-            transitionDesc.style.color = 'var(--b3-theme-text-secondary)';
-            transitionDesc.style.marginTop = '4px';
-            transitionDesc.style.padding = '8px';
-            transitionDesc.style.backgroundColor = 'var(--b3-theme-background-light)';
-            transitionDesc.style.borderRadius = '4px';
-            transitionDesc.style.lineHeight = '1.5';
-            transitionDesc.innerHTML = `
-                <strong>${t('transitionDesc.title')}</strong><br>
-                • ${t('transitionDesc.default')}<br>
-                • ${t('transitionDesc.fast')}<br>
-                <br>
-                ${t('transitionDesc.example')} <code>all 0.2s cubic-bezier(0.4, 0, 0.2, 1)</code>
-            `;
-            transitionGroup.appendChild(transitionDesc);
-            content.appendChild(transitionGroup);
         }
         
         wrapper.appendChild(content);
@@ -1385,6 +1495,18 @@
     async function refreshConfig() {
         const configWindow = document.getElementById('FreeThemeConfigWindow');
         if (configWindow) {
+            // 保存当前窗口位置（使用 getBoundingClientRect 获取实际位置）
+            const rect = configWindow.getBoundingClientRect();
+            const savedLeft = configWindow.style.left;
+            const savedTop = configWindow.style.top;
+            const savedTransform = configWindow.style.transform;
+            const savedRight = configWindow.style.right;
+            const savedBottom = configWindow.style.bottom;
+            
+            // 保存内容区域的滚动位置
+            const contentArea = document.getElementById('FreeThemeConfigContent');
+            const savedScrollTop = contentArea ? contentArea.scrollTop : 0;
+            
             // 找到 wrapper（最外层容器）
             const oldWrapper = document.getElementById('FreeThemeConfigWrapper');
             if (oldWrapper) {
@@ -1396,6 +1518,32 @@
                 configWindow.innerHTML = '';
                 configWindow.appendChild(newWrapper);
             }
+            
+            // 恢复窗口位置（使用实际位置，因为 style 属性可能为空）
+            // 由于窗口是 position: fixed，getBoundingClientRect 返回的是相对于视口的位置
+            configWindow.style.left = savedLeft || `${rect.left}px`;
+            configWindow.style.top = savedTop || `${rect.top}px`;
+            if (savedTransform) {
+                configWindow.style.transform = savedTransform;
+            }
+            if (savedRight) {
+                configWindow.style.right = savedRight;
+            }
+            if (savedBottom) {
+                configWindow.style.bottom = savedBottom;
+            }
+            
+            // 恢复内容区域的滚动位置
+            if (savedScrollTop > 0) {
+                // 使用 setTimeout 确保 DOM 更新完成后再设置滚动位置
+                setTimeout(() => {
+                    const newContentArea = document.getElementById('FreeThemeConfigContent');
+                    if (newContentArea) {
+                        newContentArea.scrollTop = savedScrollTop;
+                    }
+                }, 0);
+            }
+            
             // 重新应用配置以确保 CSS 变量更新
             const config = await getConfig();
             applyConfig(config);

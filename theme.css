@@ -47,6 +47,12 @@
     --b3-theme-font-size: 14px;
     --b3-theme-line-height: 1.8;
     --b3-theme-spacing: 1em;
+    --b3-theme-font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace, sans-serif;
+    
+    /* 圆角 */
+    --b3-theme-border-radius-small: 4px;
+    --b3-theme-border-radius-medium: 6px;
+    --b3-theme-border-radius-large: 8px;
 }
 
 /* 暗黑主题 */
@@ -93,6 +99,12 @@
     --b3-theme-font-size: 14px;
     --b3-theme-line-height: 1.8;
     --b3-theme-spacing: 1em;
+    --b3-theme-font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace, sans-serif;
+    
+    /* 圆角 */
+    --b3-theme-border-radius-small: 4px;
+    --b3-theme-border-radius-medium: 6px;
+    --b3-theme-border-radius-large: 8px;
     
     /* 过渡动画 */
     --b3-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,10 +116,15 @@ body {
     background-color: var(--b3-theme-background);
     color: var(--b3-theme-on-background);
     transition: var(--b3-transition);
-    /* 英文使用等宽字体，中文使用思源黑体 */
-    font-family: 'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace, sans-serif;
+    font-family: var(--b3-theme-font-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* 主文本区域字体设置 */
+.protyle-wysiwyg,
+.b3-typography {
+    font-family: var(--b3-theme-font-family);
 }
 
 /* 标题样式优化 */
@@ -121,6 +138,7 @@ h1, h2, h3, h4, h5, h6,
     line-height: var(--b3-theme-line-height);
     margin-top: var(--b3-theme-spacing);
     margin-bottom: calc(var(--b3-theme-spacing) * 0.5);
+    font-family: var(--b3-theme-font-family);
 }
 
 /* 段落样式 */
@@ -133,6 +151,7 @@ p,
     line-height: var(--b3-theme-line-height);
     margin-bottom: var(--b3-theme-spacing);
     color: var(--b3-theme-text-primary);
+    font-family: var(--b3-theme-font-family);
 }
 
 /* 段落和标题内的文本内容 */
@@ -168,6 +187,7 @@ li,
 .b3-typography li,
 .b3-typography .li {
     color: var(--b3-theme-text-primary);
+    font-family: var(--b3-theme-font-family);
 }
 
 /* 列表项内的段落样式 - 重置段落样式以避免影响对齐 */
@@ -189,7 +209,7 @@ li,
 .b3-typography code:not(pre code) {
     background-color: var(--b3-theme-code-background);
     border: 1px solid var(--b3-theme-code-border);
-    border-radius: 4px;
+    border-radius: var(--b3-theme-border-radius-small);
     padding: 2px 6px;
     font-size: 0.9em;
     color: var(--b3-theme-code-text);
@@ -209,7 +229,7 @@ li,
 .b3-typography [data-node-id].code-block {
     background-color: var(--b3-theme-code-background);
     border: 1px solid var(--b3-theme-code-border);
-    border-radius: 8px;
+    border-radius: var(--b3-theme-border-radius-large);
     margin: 1em 0;
     overflow: hidden;
     box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
@@ -274,7 +294,7 @@ button.b3-button--primary {
     background-color: var(--b3-theme-primary);
     color: var(--b3-theme-on-primary);
     border-color: var(--b3-theme-primary);
-    border-radius: 6px;
+    border-radius: var(--b3-theme-border-radius-medium);
     padding: 0.5em 1em;
     font-weight: 500;
     transition: var(--b3-transition);
@@ -305,7 +325,7 @@ textarea {
     background-color: var(--b3-theme-background);
     color: var(--b3-theme-on-background);
     border: 1px solid var(--b3-border-color);
-    border-radius: 6px;
+    border-radius: var(--b3-theme-border-radius-medium);
     padding: 0.5em 0.75em;
     transition: var(--b3-transition);
     font-family: inherit;
@@ -342,7 +362,7 @@ textarea:focus {
 .b3-panel {
     background-color: var(--b3-theme-surface);
     border: 1px solid var(--b3-border-color);
-    border-radius: 8px;
+    border-radius: var(--b3-theme-border-radius-large);
     box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
     transition: var(--b3-transition);
     padding: 1em;
@@ -366,7 +386,7 @@ blockquote,
     font-style: italic;
     background-color: var(--b3-theme-background-light);
     padding: 1em;
-    border-radius: 4px;
+    border-radius: var(--b3-theme-border-radius-small);
 }
 
 /* 表格样式 */
@@ -446,7 +466,7 @@ hr {
 img {
     max-width: 100%;
     height: auto;
-    border-radius: 6px;
+    border-radius: var(--b3-theme-border-radius-medium);
     box-shadow: 0 2px 8px var(--b3-theme-shadow-light);
     transition: var(--b3-transition);
 }
