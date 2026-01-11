@@ -9,8 +9,8 @@
 - 🎨 **双模式支持**：完美支持明亮和暗黑两种主题模式
 - 🎯 **可视化配置**：通过图形界面轻松配置所有颜色和样式
 - 🎲 **随机配色**：一键生成随机配色方案，发现更多可能
-- 🔧 **丰富配置项**：支持配置主色调、背景色、文本色、边框色、代码块、选中文本、阴影等
-- 🔤 **字体配置**：英文使用等宽字体，中文使用思源黑体
+- 🔧 **丰富配置项**：支持配置主色调、背景色、文本色、边框色、代码块、选中文本、阴影、字体、排版等
+- 🔤 **字体配置**：英文使用等宽字体，中文使用思源黑体，支持自定义字体
 - 💾 **配置持久化**：配置自动保存，刷新后依然有效
 - 🔄 **实时预览**：修改配置立即生效，所见即所得
 
@@ -76,7 +76,6 @@
 **💻 代码块**
 - 代码块背景
 - 代码块边框
-- 代码块文本
 
 **✨ 选中文本**
 - 选中背景
@@ -90,24 +89,22 @@
 #### 3. 其他配置
 
 **🔤 字体**
-- 英文字体：等宽字体配置
-- 中文字体：中文字体配置
+- 英文字体：通过下拉选择器选择等宽字体，支持自定义
+- 中文字体：通过下拉选择器选择中文字体，支持自定义
 
 **📏 字体大小**
-- 小号、正常、中等、大号、超大
+- 单个值配置（如 `14px`）
 
 **📐 行高**
-- 紧凑、正常、宽松
+- 单个值配置（如 `1.8`）
 
 **📊 间距**
-- 超小、小、中、大、超大
+- 单个值配置（如 `1em`）
 
 **🔘 圆角**
-- 小圆角、中圆角、大圆角
-
-**⚡ 过渡动画**
-- 默认过渡：用于大多数元素的过渡效果
-- 快速过渡：用于需要快速响应的交互
+- 小圆角
+- 中圆角
+- 大圆角
 
 ## 🎨 使用技巧
 
@@ -127,29 +124,6 @@
 - 在不同设备间同步配置文件
 - 备份和恢复配置
 
-## 💻 编程接口
-
-主题提供了 JavaScript API，可以在浏览器控制台中使用：
-
-```javascript
-// 获取当前配置
-const config = await window.FreeThemeConfig.getConfig();
-
-// 更新配置
-await window.FreeThemeConfig.updateConfig({
-    light: {
-        primary: '#007bff',
-        background: '#ffffff',
-    }
-});
-
-// 重置为默认配置
-await window.FreeThemeConfig.resetConfig();
-
-// 生成随机配色
-await window.FreeThemeConfig.generateRandomColors('light');
-```
-
 ## 📁 配置文件
 
 配置文件位置：`/conf/free-theme-config.json`
@@ -160,25 +134,67 @@ await window.FreeThemeConfig.generateRandomColors('light');
 {
   "light": {
     "primary": "#d23f31",
+    "primaryHover": "#c6392b",
     "background": "#ffffff",
+    "backgroundLight": "#f8f9fa",
+    "backgroundDark": "#f0f1f2",
+    "surface": "#ffffff",
+    "surfaceHover": "#f8f9fa",
     "textPrimary": "#212529",
-    ...
+    "textSecondary": "#6c757d",
+    "textDisabled": "#adb5bd",
+    "onBackground": "#212529",
+    "onSurface": "#343a40",
+    "onPrimary": "#ffffff",
+    "borderColor": "#dee2e6",
+    "borderColorHover": "#adb5bd",
+    "borderColorLight": "#e9ecef",
+    "codeBackground": "#f8f9fa",
+    "codeBorder": "#e9ecef",
+    "selectionBg": "#b3d4fc",
+    "selectionText": "#212529",
+    "shadow": "rgba(0, 0, 0, 0.1)",
+    "shadowLight": "rgba(0, 0, 0, 0.05)",
+    "shadowMedium": "rgba(0, 0, 0, 0.08)"
   },
   "dark": {
     "primary": "#ff6b6b",
+    "primaryHover": "#ff7a7a",
     "background": "#1e1e1e",
+    "backgroundLight": "#252526",
+    "backgroundDark": "#2d2d30",
+    "surface": "#252526",
+    "surfaceHover": "#2d2d30",
     "textPrimary": "#d4d4d4",
-    ...
+    "textSecondary": "#858585",
+    "textDisabled": "#505050",
+    "onBackground": "#d4d4d4",
+    "onSurface": "#cccccc",
+    "onPrimary": "#ffffff",
+    "borderColor": "#3e3e42",
+    "borderColorHover": "#505050",
+    "borderColorLight": "#2d2d30",
+    "codeBackground": "#252526",
+    "codeBorder": "#3e3e42",
+    "selectionBg": "#264f78",
+    "selectionText": "#d4d4d4",
+    "shadow": "rgba(0, 0, 0, 0.3)",
+    "shadowLight": "rgba(0, 0, 0, 0.2)",
+    "shadowMedium": "rgba(0, 0, 0, 0.25)"
   },
   "fontFamily": {
     "english": "'Consolas', 'Monaco', 'Courier New', 'JetBrains Mono'",
     "chinese": "'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', 'Microsoft YaHei'"
   },
-  "fontSize": {
-    "small": "12px",
-    "normal": "14px",
-    ...
-  }
+  "fontSize": "14px",
+  "lineHeight": "1.8",
+  "spacing": "1em",
+  "borderRadius": {
+    "small": "4px",
+    "medium": "6px",
+    "large": "8px"
+  },
+  "crazyMode": false
 }
 ```
 
@@ -204,6 +220,10 @@ free-theme/
 3. 在思源笔记中刷新主题或重启应用
 
 ## 📝 更新日志
+
+### v1.1.0
+- 🔧 优化配置系统
+- 🐛 修复已知问题
 
 ### v1.0.0
 - ✨ 初始版本
